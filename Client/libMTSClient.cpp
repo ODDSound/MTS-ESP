@@ -260,7 +260,8 @@ static char freqToNoteET(double freq)
 {
     static double freqs[128];static bool init=false;
     if (!init) {for (int i=0;i<128;i++) freqs[i]=440.*pow(2.,(i-69.)/12.);init=true;}
-    if (freq<=freqs[0]) return 0;if (freq>=freqs[127]) return 127;
+    if (freq<=freqs[0]) return 0;
+    if (freq>=freqs[127]) return 127;
     int mid=0;int n=-1;int n2=-1;
     for (int first=0,last=127;freq!=freqs[(mid=first+(last-first)/2)];(freq<freqs[mid])?last=mid-1:first=mid+1) if (first>last)
     {
