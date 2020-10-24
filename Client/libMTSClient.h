@@ -25,20 +25,24 @@ extern "C" {
      If you don’t have the midi channel, use -1, but supplying the channel allows support for microtonal
      MIDI controllers with more than 128 keys that use multi-channel keyboard mappings.
 
-     Querying the retune while a note is playing will allow tuning to change along the flight of the note,
-     which is cool, so do if you can! Ideally at the same time as processing any other pitch modulation
-     sources (envelopes, MIDI controllers, LFOs etc.).
+     Querying retune whilst a note is playing allows the tuning to change along the flight of the note,
+     which is the ideal, so do this if you can and as often as possible. Ideally at the same time as processing
+     any other pitch modulation sources (envelopes, MIDI controllers, LFOs etc.).
 
      The Scala .kbm keyboard mapping file format allows for MIDI keys to be unmapped i.e. no frequency
-     is specified for them. The MTS-ESP library supports this. You can query whether the note should
+     is specified for them. The MTS-ESP library supports this. You can query whether a note
      is unmapped and should be ignored with:
 
         bool should_ignore_note = MTS_ShouldFilterNote(client, midinote, midichannel);
 
      If this returns true, ignore the noteOn and don’t play anything. Calling this function is encouraged but
      optional and a valid value for the frequency/retuning will still be returned for an unmapped note. Once again
-     if you don’t have the midi channel, use -1, however supplying it allows a master to dedicate keys on specific
-     channels for e.g. switching tunings.
+     if you don’t have the midi channel, use -1, however supplying it allows a master to dedicate notes on specific
+     channels for e.g. key switches to change tunings.
+     
+     A helper function is available which returns the MIDI note number whose pitch is nearest a given frequency.
+     The MIDI note number returned is guaranteed to be mapped. If the destination channel for the MIDI note is
+     known it should be supplied so that any channel-specific note filtering can be respected.
 
      To add support for MIDI Tuning System to your plugin (from the MIDI Spec, using sysex), both dump and realtime,
      implement the above and, when given sysex, call:
@@ -75,6 +79,9 @@ extern "C" {
     extern double MTS_RetuningInSemitones(MTSClient *client,char midinote,char midichannel=-1);
     extern double MTS_RetuningAsRatio(MTSClient *client,char midinote,char midichannel=-1);
     
+    // Returns the note number whose pitch is closest to that supplied. Destination MIDI channel should be included if known (0-15).
+    extern char MTS_FrequencyToNote(MTSClient *client,double freq,char midichannel=-1);
+    
     // Returns the name of the current scale.
     extern const char *MTS_GetScaleName(MTSClient *client);
 
@@ -85,5 +92,4 @@ extern "C" {
 };
 
 #endif
-
 
