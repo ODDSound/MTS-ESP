@@ -8,8 +8,7 @@
 #include <dlfcn.h>
 #endif
 
-const static double logarithm2=log(2.);
-const static double ratioToSemitones=12./log(2.);
+const static double ratioToSemitones=17.31234049066756088832;   // 12./log(2.)
 typedef void (*mts_pv)(void*);
 typedef bool (*mts_bool)(void);
 typedef bool (*mts_bcc)(char,char);
@@ -123,7 +122,7 @@ struct MTSClient
         }
         if (!dLower) return iUpper;
         if (!dUpper || iLower==iUpper) return iLower;
-        double fmid=freqs[iLower]*pow(2.,0.5*(log(freqs[iUpper]/freqs[iLower])/logarithm2));
+        double fmid=freqs[iLower]*pow(2.,0.5*(log(freqs[iUpper]/freqs[iLower])/M_LN2));
         return freq<fmid?iLower:iUpper;
     }
     inline void parseMIDIData(const unsigned char *buffer,int len)
@@ -275,7 +274,7 @@ static char freqToNoteET(double freq)
     else if (n==127) n2=126;
     else n2=n+1*(fabs(freqs[n-1]-freq)<fabs(freqs[n+1]-freq)?-1:1);
     if (n2<n) {int t=n;n=n2;n2=t;}
-    double fmid=freqs[n]*pow(2.,0.5*(log(freqs[n2]/freqs[n])/logarithm2));
+    double fmid=freqs[n]*pow(2.,0.5*(log(freqs[n2]/freqs[n])/M_LN2));
     return freq<fmid?n:n2;
 }
 
