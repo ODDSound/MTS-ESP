@@ -66,13 +66,13 @@ extern "C" {
 
     // Register/deregister as a client.  Call from the plugin constuctor and destructor.
     extern MTSClient* MTS_RegisterClient();
-    extern void MTS_DeregisterClient(MTSClient*);
+    extern void MTS_DeregisterClient(MTSClient *client);
 
     // Check if the client is currently connected to a master plugin.
-    extern bool MTS_HasMaster(MTSClient*);
+    extern bool MTS_HasMaster(MTSClient *client);
 
     // Returns true if note should not be played. MIDI channel argument is optional but should be included if possible (0-15).
-    extern bool MTS_ShouldFilterNote(MTSClient* c,char midinote,char midichannel=-1);
+    extern bool MTS_ShouldFilterNote(MTSClient *client,char midinote,char midichannel=-1);
 
     // Retuning a midi note. Pick the version that makes your life easiest! MIDI channel argument is optional but should be included if possible (0-15).
     extern double MTS_NoteToFrequency(MTSClient *client,char midinote,char midichannel=-1);
