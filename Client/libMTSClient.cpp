@@ -246,7 +246,7 @@ struct MTSClient
         if (note<0 || note>127 || retuneNote<0 || retuneNote>127) return;
         retuning[note]=440.*pow(2.,((retuneNote+detune)-69.)/12.);
     }
-    const char *getScaleName() {return global.GetScaleName?global.GetScaleName():tuningName;}
+    const char *getScaleName() {return global.isOnline() && global.GetScaleName?global.GetScaleName():tuningName;}
     
     enum eSysexState {eIgnoring=0,eMatchingSysex,eSysexValid,eMatchingMTS,eMatchingBank,eMatchingProg,eMatchingChannel,eTuningName,eNumTunings,eTuningData,eCheckSum};
     enum eMTSFormat {eRequest=0,eBulk,eSingle,eScaleOctOneByte,eScaleOctTwoByte,eScaleOctOneByteExt,eScaleOctTwoByteExt};
