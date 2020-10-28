@@ -1,7 +1,9 @@
 #ifndef libMTSClient_h
 #define libMTSClient_h
 
+#ifdef __cplusplus
 extern "C" {
+#endif
     
     /*
      How to use libMTSClient:
@@ -65,31 +67,33 @@ extern "C" {
     typedef struct MTSClient MTSClient;
 
     // Register/deregister as a client.  Call from the plugin constuctor and destructor.
-    extern MTSClient* MTS_RegisterClient();
+    extern MTSClient *MTS_RegisterClient();
     extern void MTS_DeregisterClient(MTSClient *client);
 
     // Check if the client is currently connected to a master plugin.
     extern bool MTS_HasMaster(MTSClient *client);
 
-    // Returns true if note should not be played. MIDI channel argument is optional but should be included if possible (0-15).
-    extern bool MTS_ShouldFilterNote(MTSClient *client,char midinote,char midichannel=-1);
+    // Returns true if note should not be played. MIDI channel argument is optional but should be included if possible (0-15), else set to -1.
+    extern bool MTS_ShouldFilterNote(MTSClient *client, char midinote, char midichannel);
 
-    // Retuning a midi note. Pick the version that makes your life easiest! MIDI channel argument is optional but should be included if possible (0-15).
-    extern double MTS_NoteToFrequency(MTSClient *client,char midinote,char midichannel=-1);
-    extern double MTS_RetuningInSemitones(MTSClient *client,char midinote,char midichannel=-1);
-    extern double MTS_RetuningAsRatio(MTSClient *client,char midinote,char midichannel=-1);
+    // Retuning a midi note. Pick the version that makes your life easiest! MIDI channel argument is optional but should be included if possible (0-15), else set to -1.
+    extern double MTS_NoteToFrequency(MTSClient *client, char midinote, char midichannel);
+    extern double MTS_RetuningInSemitones(MTSClient *client, char midinote, char midichannel);
+    extern double MTS_RetuningAsRatio(MTSClient *client, char midinote, char midichannel);
     
-    // Returns the note number whose pitch is closest to that supplied. Destination MIDI channel should be included if known (0-15).
-    extern char MTS_FrequencyToNote(MTSClient *client,double freq,char midichannel=-1);
+    // Returns the note number whose pitch is closest to that supplied. Destination MIDI channel should be included if known (0-15), else set to -1.
+    extern char MTS_FrequencyToNote(MTSClient *client, double freq, char midichannel);
     
     // Returns the name of the current scale.
     extern const char *MTS_GetScaleName(MTSClient *client);
 
     // Parse incoming MIDI data to update local retuning.  All formats of MTS sysex message accepted.
-    extern void MTS_ParseMIDIDataU(MTSClient *client,const unsigned char *buffer,int len);
-    extern void MTS_ParseMIDIData(MTSClient *client,const char *buffer,int len);
+    extern void MTS_ParseMIDIDataU(MTSClient *client, const unsigned char *buffer, int len);
+    extern void MTS_ParseMIDIData(MTSClient *client, const char *buffer, int len);
 
-};
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

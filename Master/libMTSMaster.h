@@ -1,8 +1,10 @@
 #ifndef libMTSMaster_h
 #define libMTSMaster_h
 
+#ifdef __cplusplus
 extern "C" {
-
+#endif
+    
     /*
      MTS Master interface - for creating MTS Master plugins, one per session, which will control
      tuning for all MTS-ESP-compatible plugins in the session.
@@ -88,15 +90,15 @@ extern "C" {
 
     // Set frequencies for 128 MIDI notes.
     extern void MTS_SetNoteTunings(const double *freqs);
-    extern void MTS_SetNoteTuning(double freq,char midinote);
+    extern void MTS_SetNoteTuning(double freq, char midinote);
     
     // Set a scale name, so it can be displayed in clients or included in MTS sysex messages sent by a client.
     extern void MTS_SetScaleName(const char *name);
 
     // Instruct clients to filter midi notes e.g. because they are not mapped to any scale steps.
     // MIDI channel argument is optional, filtering will apply to all channels if not provided.
-    // Range for midichannel argument is 0-15.
-    extern void MTS_FilterNote(bool doFilter,char midinote,char midichannel=-1);
+    // Range for midichannel argument is 0-15, or -1 for all channels.
+    extern void MTS_FilterNote(bool doFilter, char midinote, char midichannel);
     extern void MTS_ClearNoteFilter();
 
     //-------------------------------------------------------------------------------------------------------
@@ -105,17 +107,17 @@ extern "C" {
     // Range for midichannel arguments is 0-15.
 
     // Set whether a specific MIDI channel is included in the multi-channel mapping.
-    extern void MTS_SetMultiChannel(bool set,char midichannel);
+    extern void MTS_SetMultiChannel(bool set, char midichannel);
     
     // Set frequencies for 128 MIDI notes on a specific MIDI channel.
-    extern void MTS_SetMultiChannelNoteTunings(const double *freqs,char midichannel);
-    extern void MTS_SetMultiChannelNoteTuning(double freq,char midinote,char midichannel);
+    extern void MTS_SetMultiChannelNoteTunings(const double *freqs, char midichannel);
+    extern void MTS_SetMultiChannelNoteTuning(double freq, char midinote, char midichannel);
     
     // Instruct clients to filter midi notes on a specific MIDI channel.
-    extern void MTS_FilterNoteMultiChannel(bool doFilter,char midinote,char midichannel);
+    extern void MTS_FilterNoteMultiChannel(bool doFilter, char midinote, char midichannel);
     extern void MTS_ClearNoteFilterMultiChannel(char midichannel);
 
-};
-
+#ifdef __cplusplus
+}
 #endif
 
