@@ -143,7 +143,7 @@ struct MTSClient
                 case eMatchingSysex:
                     sysex_ctr=0;
                     if (b==0x7E) state=eSysexValid;
-                    else if (b==0x7F) realtime=true,state=eSysexValid;
+                    else if (b==0x7F) {realtime=true;state=eSysexValid;}
                     else state=eMatchingSysex;   // don't switch to ignoring...Scala adds two bytes here, we need to skip over them
                     break;
                 case eSysexValid:
@@ -158,16 +158,16 @@ struct MTSClient
                     sysex_ctr=0;
                     switch (b)
                     {
-                        case 0: format=eRequest,state=eMatchingProg; break;
-                        case 1: format=eBulk,state=eMatchingProg; break;
-                        case 2: format=eSingle,state=eMatchingProg; break;
-                        case 3: format=eRequest,state=eMatchingBank; break;
-                        case 4: format=eBulk,state=eMatchingBank; break;
-                        case 5: format=eScaleOctOneByte,state=eMatchingBank; break;
-                        case 6: format=eScaleOctTwoByte,state=eMatchingBank; break;
-                        case 7: format=eSingle,state=eMatchingBank; break;
-                        case 8: format=eScaleOctOneByteExt,state=eMatchingChannel; break;
-                        case 9: format=eScaleOctTwoByteExt,state=eMatchingChannel; break;
+                        case 0: format=eRequest;state=eMatchingProg; break;
+                        case 1: format=eBulk;state=eMatchingProg; break;
+                        case 2: format=eSingle;state=eMatchingProg; break;
+                        case 3: format=eRequest;state=eMatchingBank; break;
+                        case 4: format=eBulk;state=eMatchingBank; break;
+                        case 5: format=eScaleOctOneByte;state=eMatchingBank; break;
+                        case 6: format=eScaleOctTwoByte;state=eMatchingBank; break;
+                        case 7: format=eSingle;state=eMatchingBank; break;
+                        case 8: format=eScaleOctOneByteExt;state=eMatchingChannel; break;
+                        case 9: format=eScaleOctTwoByteExt;state=eMatchingChannel; break;
                         default: state=eIgnoring; break;    // it's not a valid MTS format
                     }
                     break;
@@ -177,21 +177,21 @@ struct MTSClient
                     break;
                 case eMatchingProg:
                     prog=b;
-                    if (format==eSingle) state=eNumTunings;else state=eTuningName,tuningName[0]='\0';
+                    if (format==eSingle) state=eNumTunings;else {state=eTuningName;tuningName[0]='\0';}
                     break;
                 case eTuningName:
                     tuningName[sysex_ctr]=b;
-                    if (++sysex_ctr>=16) tuningName[16]='\0',sysex_ctr=0,state=eTuningData;
+                    if (++sysex_ctr>=16) {tuningName[16]='\0';sysex_ctr=0;state=eTuningData;}
                     break;
                 case eNumTunings:
-                    numTunings=b,sysex_ctr=0,state=eTuningData;
+                    numTunings=b;sysex_ctr=0;state=eTuningData;
                     break;
                 case eMatchingChannel:
                     switch (sysex_ctr++)
                     {
                         case 0: for (int i=14;i<16;i++) channelBitmap|=(1<<i); break;
                         case 1: for (int i=7;i<14;i++) channelBitmap|=(1<<i); break;
-                        case 2: for (int i=0;i<7;i++) channelBitmap|=(1<<i); sysex_ctr=0,state=eTuningData; break;
+                        case 2: for (int i=0;i<7;i++) channelBitmap|=(1<<i);sysex_ctr=0;state=eTuningData; break;
                     }
                     break;
                 case eTuningData:
