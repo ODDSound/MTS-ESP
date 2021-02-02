@@ -18,16 +18,16 @@ extern "C" {
 
      When given a note:
 
-        double f=MTS_NoteToFrequency(client, midinote, midichannel);
+        double f = MTS_NoteToFrequency(client, midinote, midichannel);
      OR
-        double retune_semitones=MTS_RetuningInSemitones(client, midinote, midichannel);
+        double retune_semitones = MTS_RetuningInSemitones(client, midinote, midichannel);
      OR
-        double retune_ratio=MTS_RetuningAsRatio(client, midinote, midichannel);
+        double retune_ratio = MTS_RetuningAsRatio(client, midinote, midichannel);
 
      If you don’t have the midi channel, use -1, but supplying the channel allows support for microtonal
      MIDI controllers with more than 128 keys that use multi-channel keyboard mappings.
 
-     Querying retune whilst a note is playing allows the tuning to change along the flight of the note,
+     ***NOTE***: Querying retune whilst a note is playing allows the tuning to change along the flight of the note,
      which is the ideal, so do this if you can and as often as possible. Ideally at the same time as processing
      any other pitch modulation sources (envelopes, MIDI controllers, LFOs etc.).
 

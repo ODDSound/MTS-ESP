@@ -55,7 +55,8 @@ struct mtsclientglobal
 #else
     virtual void load_lib()
     {
-        if (!(handle=dlopen("/Library/Application Support/MTS-ESP/libMTS.dylib",RTLD_NOW))) return;
+        if (!(handle=dlopen("/Library/Application Support/MTS-ESP/libMTS.dylib",RTLD_NOW)) &&
+            !(handle=dlopen("/usr/local/lib/libMTS.dylib",RTLD_NOW))) return;
         RegisterClient                  =(mts_pv)   dlsym(handle,"MTS_RegisterClient");
         DeregisterClient                =(mts_pv)   dlsym(handle,"MTS_DeregisterClient");
         HasMaster                       =(mts_bool) dlsym(handle,"MTS_HasMaster");

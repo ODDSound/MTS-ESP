@@ -57,7 +57,8 @@ struct mtsmasterglobal
 #else
 	void load_lib()
     {
-		if (!(handle=dlopen("/Library/Application Support/MTS-ESP/libMTS.dylib",RTLD_NOW))) return;
+        if (!(handle=dlopen("/Library/Application Support/MTS-ESP/libMTS.dylib",RTLD_NOW)) &&
+            !(handle=dlopen("/usr/local/lib/libMTS.dylib",RTLD_NOW))) return;
         RegisterMaster              =(mts_c)    dlsym(handle,"MTS_RegisterMaster");
         DeregisterMaster            =(mts_void) dlsym(handle,"MTS_DeregisterMaster");
         HasMaster                   =(mts_bool) dlsym(handle,"MTS_HasMaster");
