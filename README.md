@@ -38,11 +38,11 @@ It is optional for a client to provide a MIDI channel when querying tuning or wh
 
 This is the dynamic library through which a master connects to clients.  If you are building a master plugin, this should be placed at:
 
-**Windows 64bit:** %WINDIR%\System32 (64 bit library) and %SYSTEM%\SysWOW64 (32 bit library)
-**Windows 32bit:** %WINDIR%\System32 (32 bit library)
-**Mac OSX:** /Library/Application Support/MTS-ESP
-**Linux:** /usr/local/lib
-
+**Windows 64bit:** %WINDIR%\System32 (64 bit library) and %SYSTEM%\SysWOW64 (32 bit library)  
+**Windows 32bit:** %WINDIR%\System32 (32 bit library)  
+**Mac OSX:** /Library/Application Support/MTS-ESP  
+**Linux:** /usr/local/lib  
+  
 Windows and OSX Installers are provided which you can bundle into your own installer or, if you prefer, just include the library files and install to the above locations.  The Mac installer is notarised and compatible with OSX 10.15.
 
 
