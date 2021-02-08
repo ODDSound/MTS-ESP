@@ -46,5 +46,10 @@ This is the dynamic library through which a master connects to clients.  If you 
 Windows and OSX Installers are provided which you can bundle into your own installer or, if you prefer, just include the library files and install to the above locations.  The Mac installer is notarised and compatible with OSX 10.15.
 
 
+## Max Package
+
+A Max Package is available which includes objects that allow Max for Live devices to support MTS-ESP as a Client.  Source code for the objects is also included.  Note that Max for Live registers itself as a Client only once.  Regardless the number of MTS-ESP Max for Live devices instanced in a session, the connection count will only increase by one.
+
+
 For any queries, assistance or bug reports contact tech@oddsound.com.
 
