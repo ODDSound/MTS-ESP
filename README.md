@@ -43,7 +43,7 @@ This is the dynamic library through which a master connects to clients.  If you 
 **Mac OSX:** /Library/Application Support/MTS-ESP  
 **Linux:** /usr/local/lib  
   
-Windows and OSX Installers are provided which you can bundle into your own installer or, if you prefer, just include the library files and install to the above locations.  The Mac installer is notarised and compatible with OSX 10.15.
+Windows and OSX Installers are provided which you can bundle into your own installer or, if you prefer, just include the library files and install to the above locations.  The Mac installers are notarised and compatible with OSX 10.15+.
 
 
 ## Max Package
