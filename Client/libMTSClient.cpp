@@ -20,7 +20,7 @@ typedef const char *(*mts_pcc)(void);
 
 struct mtsclientglobal
 {
-    mtsclientglobal() : RegisterClient(0), DeregisterClient(0), HasMaster(0), ShouldFilterNote(0), ShouldFilterNoteMultiChannel(0), GetTuning(0), GetMultiChannelTuning(0), UseMultiChannelTuning(0), GetScaleName(0), esp_retuning(0)
+    mtsclientglobal() : RegisterClient(0), DeregisterClient(0), HasMaster(0), ShouldFilterNote(0), ShouldFilterNoteMultiChannel(0), GetTuning(0), GetMultiChannelTuning(0), UseMultiChannelTuning(0), GetScaleName(0), esp_retuning(0), handle(0)
     {
         for (int i=0;i<128;i++) iet[i]=1./(440.*pow(2.,(i-69.)/12.));
         load_lib();
@@ -50,7 +50,7 @@ struct mtsclientglobal
         UseMultiChannelTuning           =(mts_bc)   GetProcAddress(handle,"MTS_UseMultiChannelTuning");
         GetScaleName                    =(mts_pcc)  GetProcAddress(handle,"MTS_GetScaleName");
     }
-    virtual ~mtsclientglobal() {FreeLibrary(handle);}
+    virtual ~mtsclientglobal() {if (handle) FreeLibrary(handle);}
     HINSTANCE handle;
 #else
     virtual void load_lib()
@@ -67,8 +67,8 @@ struct mtsclientglobal
         UseMultiChannelTuning           =(mts_bc)   dlsym(handle,"MTS_UseMultiChannelTuning");
         GetScaleName                    =(mts_pcc)  dlsym(handle,"MTS_GetScaleName");
     }
-    virtual ~mtsclientglobal() {if(handle) dlclose(handle);}
-    void *handle = nullptr;
+    virtual ~mtsclientglobal() {if (handle) dlclose(handle);}
+    void *handle;
 #endif
 };
 

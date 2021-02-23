@@ -52,7 +52,7 @@ struct mtsmasterglobal
         FilterNoteMultiChannel      =(mts_bcc)  GetProcAddress(handle,"MTS_FilterNoteMultiChannel");
         ClearNoteFilterMultiChannel =(mts_char) GetProcAddress(handle,"MTS_ClearNoteFilterMultiChannel");
 	}
-	~mtsmasterglobal() {FreeLibrary(handle);}
+	~mtsmasterglobal() {if (handle) FreeLibrary(handle);}
 	HINSTANCE handle;
 #else
 	void load_lib()
@@ -74,7 +74,7 @@ struct mtsmasterglobal
         FilterNoteMultiChannel      =(mts_bcc)  dlsym(handle,"MTS_FilterNoteMultiChannel");
         ClearNoteFilterMultiChannel =(mts_char) dlsym(handle,"MTS_ClearNoteFilterMultiChannel");
 	}
-	~mtsmasterglobal() {dlclose(handle);}
+	~mtsmasterglobal() {if (handle) dlclose(handle);}
 	void *handle;
 #endif
 };
