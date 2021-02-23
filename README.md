@@ -9,7 +9,7 @@ A free master plugin, OddSound MTSMiniMaster, supports loading of .scl and .tun 
 
 ## Client
 
-Any plugin that receives and processes MIDI note data can be made compatible with MTS-ESP using the MTS Client library.
+Any plugin that receives and processes MIDI note data can be made compatible with MTS-ESP using the MTS Client library.  All it takes is to include libMTSClient.h and libMTSClient.cpp from the 'Client' folder in your build.
 
 A client can query the re-tuning for a given MIDI note number either as an absolute frequency value or as the difference from the standard 12-TET tuning (i.e. 440*2^((midi_note-69) / 12)).   **NOTE:** Ideally it should do this as often as possible whilst a note is being played or sound is being processed, not just when a note on is received, so that note frequencies can update in real-time (along the flight of a note) if the tuning is changed or automated in the master plugin.
 
