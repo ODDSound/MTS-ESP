@@ -67,8 +67,8 @@ struct mtsclientglobal
         UseMultiChannelTuning           =(mts_bc)   dlsym(handle,"MTS_UseMultiChannelTuning");
         GetScaleName                    =(mts_pcc)  dlsym(handle,"MTS_GetScaleName");
     }
-    virtual ~mtsclientglobal() {dlclose(handle);}
-    void *handle;
+    virtual ~mtsclientglobal() {if(handle) dlclose(handle);}
+    void *handle = nullptr;
 #endif
 };
 
