@@ -81,7 +81,7 @@ struct MTSClient
         for (int i=0;i<128;i++) retuning[i]=440.*pow(2.,(i-69.)/12.);
         if (global.RegisterClient) global.RegisterClient((void*)this);
     }
-    ~MTSClient() {if (global.DeregisterClient) global.DeregisterClient((void*)this);}
+    ~MTSClient() {if (hasMaster() && global.DeregisterClient) global.DeregisterClient((void*)this);}
     bool hasMaster() {return global.isOnline();}
     inline double freq(char midinote,char midichannel)
     {
