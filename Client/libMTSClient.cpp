@@ -10,7 +10,7 @@
 
 const static double ln2=0.693147180559945309417;
 const static double ratioToSemitones=17.31234049066756088832;   // 12./log(2.)
-typedef void (*mts_void)();
+typedef void (*mts_void)(void);
 typedef bool (*mts_bool)(void);
 typedef bool (*mts_bcc)(char,char);
 typedef const double *(*mts_cd)(void);
