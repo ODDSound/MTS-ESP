@@ -10,7 +10,7 @@
 
 const static double ln2=0.693147180559945309417;
 const static double ratioToSemitones=17.31234049066756088832;   // 12./log(2.)
-typedef void (*mts_pv)(void*);
+typedef void (*mts_void)();
 typedef bool (*mts_bool)(void);
 typedef bool (*mts_bcc)(char,char);
 typedef const double *(*mts_cd)(void);
@@ -29,7 +29,7 @@ struct mtsclientglobal
     }
     virtual inline bool isOnline() const {return esp_retuning && HasMaster && HasMaster();}
     
-    mts_pv RegisterClient,DeregisterClient;mts_bool HasMaster;mts_bcc ShouldFilterNote,ShouldFilterNoteMultiChannel;mts_cd GetTuning;mts_cdc GetMultiChannelTuning;mts_bc UseMultiChannelTuning;mts_pcc GetScaleName;    // Interface to lib
+    mts_void RegisterClient,DeregisterClient;mts_bool HasMaster;mts_bcc ShouldFilterNote,ShouldFilterNoteMultiChannel;mts_cd GetTuning;mts_cdc GetMultiChannelTuning;mts_bc UseMultiChannelTuning;mts_pcc GetScaleName;    // Interface to lib
     double iet[128];const double *esp_retuning;const double *multi_channel_esp_retuning[16];    // tuning tables
     
 #ifdef _WIN32
@@ -40,8 +40,8 @@ struct mtsclientglobal
 		GetSystemDirectory(buffer,MAX_PATH);
         _tcscat(buffer,libpath);
 		if (!(handle=LoadLibrary(buffer))) return;
-        RegisterClient                  =(mts_pv)   GetProcAddress(handle,"MTS_RegisterClient");
-        DeregisterClient                =(mts_pv)   GetProcAddress(handle,"MTS_DeregisterClient");
+        RegisterClient                  =(mts_void) GetProcAddress(handle,"MTS_RegisterClient");
+        DeregisterClient                =(mts_void) GetProcAddress(handle,"MTS_DeregisterClient");
         HasMaster                       =(mts_bool) GetProcAddress(handle,"MTS_HasMaster");
         ShouldFilterNote                =(mts_bcc)  GetProcAddress(handle,"MTS_ShouldFilterNote");
         ShouldFilterNoteMultiChannel    =(mts_bcc)  GetProcAddress(handle,"MTS_ShouldFilterNoteMultiChannel");
@@ -57,8 +57,8 @@ struct mtsclientglobal
     {
         if (!(handle=dlopen("/Library/Application Support/MTS-ESP/libMTS.dylib",RTLD_NOW)) &&
             !(handle=dlopen("/usr/local/lib/libMTS.dylib",RTLD_NOW))) return;
-        RegisterClient                  =(mts_pv)   dlsym(handle,"MTS_RegisterClient");
-        DeregisterClient                =(mts_pv)   dlsym(handle,"MTS_DeregisterClient");
+        RegisterClient                  =(mts_void) dlsym(handle,"MTS_RegisterClient");
+        DeregisterClient                =(mts_void) dlsym(handle,"MTS_DeregisterClient");
         HasMaster                       =(mts_bool) dlsym(handle,"MTS_HasMaster");
         ShouldFilterNote                =(mts_bcc)  dlsym(handle,"MTS_ShouldFilterNote");
         ShouldFilterNoteMultiChannel    =(mts_bcc)  dlsym(handle,"MTS_ShouldFilterNoteMultiChannel");
@@ -79,9 +79,9 @@ struct MTSClient
     MTSClient() : tuningName("12-TET"), supportsMultiChannelNoteFiltering(false), supportsMultiChannelTuning(false), freqRequestReceived(false)
     {
         for (int i=0;i<128;i++) retuning[i]=440.*pow(2.,(i-69.)/12.);
-        if (global.RegisterClient) global.RegisterClient((void*)this);
+        if (global.RegisterClient) global.RegisterClient();
     }
-    ~MTSClient() {if (global.DeregisterClient) global.DeregisterClient((void*)this);}
+    ~MTSClient() {if (global.DeregisterClient) global.DeregisterClient();}
     bool hasMaster() {return global.isOnline();}
     inline double freq(char midinote,char midichannel)
     {
