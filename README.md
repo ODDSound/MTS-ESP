@@ -48,7 +48,7 @@ Windows and OSX Installers are provided which you can bundle into your own insta
 
 ## Max Package
 
-A Max Package is available which includes objects that allow Max for Live devices to support MTS-ESP as a Client.  Source code for the objects is also included.  Note that Max for Live registers itself as a Client only once.  Regardless the number of MTS-ESP Max for Live devices instanced in a session, the connection count will only increase by one.
+A [Max Package](http://github.com/ODDSound/MTS-ESP-Max-Package) is available which includes objects that allow Max for Live devices to support MTS-ESP as a Client.  Source code for the Max objects is included.
 
 
 For any queries, assistance or bug reports contact tech@oddsound.com.
