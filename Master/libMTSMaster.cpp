@@ -1,5 +1,6 @@
 #include "libMTSMaster.h"
-#ifdef _WIN32
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__) || defined(__TOS_WIN__) || defined(_MSC_VER)
+#define MTS_ESP_WIN
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tchar.h>
@@ -29,7 +30,7 @@ struct mtsmasterglobal
 	}
     mts_c RegisterMaster;mts_void DeregisterMaster;mts_bool HasMaster;mts_int GetNumClients;mts_pcd SetNoteTunings;mts_dc SetNoteTuning;mts_pcc SetScaleName;mts_bcc FilterNote;mts_void ClearNoteFilter;mts_bc SetMultiChannel;mts_pcdc SetMultiChannelNoteTunings;mts_dcc SetMultiChannelNoteTuning;mts_bcc FilterNoteMultiChannel;mts_char ClearNoteFilterMultiChannel;
 	
-#ifdef _WIN32
+#ifdef MTS_ESP_WIN
 	void load_lib()
     {
 		TCHAR buffer[MAX_PATH];

@@ -1,6 +1,7 @@
 #include "libMTSClient.h"
 #include <math.h>
-#ifdef _WIN32
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__) || defined(__TOS_WIN__) || defined(_MSC_VER)
+#define MTS_ESP_WIN
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tchar.h>
@@ -32,7 +33,7 @@ struct mtsclientglobal
     mts_void RegisterClient,DeregisterClient;mts_bool HasMaster;mts_bcc ShouldFilterNote,ShouldFilterNoteMultiChannel;mts_cd GetTuning;mts_cdc GetMultiChannelTuning;mts_bc UseMultiChannelTuning;mts_pcc GetScaleName;    // Interface to lib
     double iet[128];const double *esp_retuning;const double *multi_channel_esp_retuning[16];    // tuning tables
     
-#ifdef _WIN32
+#ifdef MTS_ESP_WIN
     virtual void load_lib()
 	{
 		TCHAR buffer[MAX_PATH];
