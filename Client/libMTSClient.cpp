@@ -77,7 +77,7 @@ static mtsclientglobal global;
 
 struct MTSClient
 {
-    MTSClient() : tuningName("12-TET"), supportsMultiChannelNoteFiltering(false), supportsMultiChannelTuning(false), freqRequestReceived(false)
+    MTSClient() : tuningName("12-TET"), supportsMultiChannelNoteFiltering(false), supportsMultiChannelTuning(false), freqRequestReceived(false), supportsMTSSysex(false)
     {
         for (int i=0;i<128;i++) retuning[i]=440.*pow(2.,(i-69.)/12.);
         if (global.RegisterClient) global.RegisterClient();
@@ -88,15 +88,34 @@ struct MTSClient
     {
         freqRequestReceived=true;
         supportsMultiChannelTuning=!(midichannel&~15);
-        if (global.isOnline())
+        if (!global.isOnline()) return retuning[midinote&127];
+        if (supportsMultiChannelNoteFiltering && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
         {
-            if (supportsMultiChannelNoteFiltering && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
-            {
-                return global.multi_channel_esp_retuning[midichannel&15][midinote&127];
-            }
-            else return global.esp_retuning[midinote&127];
+            return global.multi_channel_esp_retuning[midichannel&15][midinote&127];
         }
-        return retuning[midinote&127];
+        return global.esp_retuning[midinote&127];
+    }
+    inline double ratio(char midinote,char midichannel)
+    {
+        freqRequestReceived=true;
+        supportsMultiChannelTuning=!(midichannel&~15);
+        if (!global.isOnline()) return supportsMTSSysex?retuning[midinote&127]*global.iet[midinote&127]:1.;
+        if (supportsMultiChannelNoteFiltering && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
+        {
+            return global.multi_channel_esp_retuning[midichannel&15][midinote&127]*global.iet[midinote&127];
+        }
+        return global.esp_retuning[midinote&127]*global.iet[midinote&127];
+    }
+    inline double semitones(char midinote,char midichannel)
+    {
+        freqRequestReceived=true;
+        supportsMultiChannelTuning=!(midichannel&~15);
+        if (!global.isOnline()) return supportsMTSSysex?ratioToSemitones*log(retuning[midinote&127]*global.iet[midinote&127]):0.;
+        if (supportsMultiChannelNoteFiltering && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
+        {
+            return ratioToSemitones*log(global.multi_channel_esp_retuning[midichannel&15][midinote&127]*global.iet[midinote&127]);
+        }
+        return ratioToSemitones*log(global.esp_retuning[midinote&127]*global.iet[midinote&127]);
     }
     inline bool shouldFilterNote(char midinote,char midichannel)
     {
@@ -130,6 +149,7 @@ struct MTSClient
     }
     inline void parseMIDIData(const unsigned char *buffer,int len)
     {
+        supportsMTSSysex=true;
         int sysex_ctr=0,sysex_value=0,note=0,numTunings=0;
         int bank=-1,prog=0,checksum=0;short int channelBitmap=0;   // maybe we'll want to use these at some point
         eSysexState state=eIgnoring;eMTSFormat format=eBulk;bool realtime=false;
@@ -255,7 +275,7 @@ struct MTSClient
 
     double retuning[128];
     char tuningName[17];
-    bool supportsMultiChannelNoteFiltering,supportsMultiChannelTuning,freqRequestReceived;
+    bool supportsMultiChannelNoteFiltering,supportsMultiChannelTuning,freqRequestReceived,supportsMTSSysex;
 };
 
 static char freqToNoteET(double freq)
@@ -287,8 +307,8 @@ void MTS_DeregisterClient(MTSClient* c)                                     {del
 bool MTS_HasMaster(MTSClient* c)                                            {return c?c->hasMaster():false;}
 bool MTS_ShouldFilterNote(MTSClient* c,char midinote,char midichannel)      {return c?c->shouldFilterNote(midinote&127,midichannel):false;}
 double MTS_NoteToFrequency(MTSClient* c,char midinote,char midichannel)     {return c?c->freq(midinote,midichannel):(1./global.iet[midinote&127]);}
-double MTS_RetuningAsRatio(MTSClient* c,char midinote,char midichannel)     {return c?c->freq(midinote,midichannel)*global.iet[midinote&127]:1.;}
-double MTS_RetuningInSemitones(MTSClient* c,char midinote,char midichannel) {return ratioToSemitones*log(MTS_RetuningAsRatio(c,midinote,midichannel));}
+double MTS_RetuningAsRatio(MTSClient* c,char midinote,char midichannel)     {return c?c->ratio(midinote,midichannel):1.;}
+double MTS_RetuningInSemitones(MTSClient* c,char midinote,char midichannel) {return c?c->semitones(midinote,midichannel):0.;}
 char MTS_FrequencyToNote(MTSClient *c,double freq,char midichannel)         {return c?c->freqToNote(freq,midichannel):freqToNoteET(freq);}
 const char *MTS_GetScaleName(MTSClient *c)                                  {return c?c->getScaleName():"";}
 void MTS_ParseMIDIDataU(MTSClient *c,const unsigned char *buffer,int len)   {if (c) c->parseMIDIData(buffer,len);}
