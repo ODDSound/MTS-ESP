@@ -70,9 +70,9 @@ extern "C" {
         MTS_SetMultiChannelNoteTunings, MTS_SetMultiChannelNoteTuning, MTS_FilterNoteMultiChannel, MTS_ClearNoteFilterMultiChannel
 
      Which are as above, but take the MIDI channel as an extra parameter. Multi-channel support will only
-     work with clients that provide a MIDI channel both when requesting note filtering and retuning.
+     work with clients that provide a MIDI channel when querying both note filtering and retuning.
      Clients that don't provide a MIDI channel will use the frequencies and note filtering provided using
-     the non-multi-channel functions, therefore it is advised to always provide a general mapping in addition
+     the non-multi-channel functions, therefore it is advised to always provide a general tuning table in addition
      to a multi-channel one.
 
      */
@@ -103,10 +103,10 @@ extern "C" {
 
     //-------------------------------------------------------------------------------------------------------
 
-    // Optional set of funtions for mutli-channel mapping.
+    // Optional set of funtions for mutli-channel tuning table.
     // Range for midichannel arguments is 0-15.
 
-    // Set whether a specific MIDI channel is included in the multi-channel mapping.
+    // Set whether a specific MIDI channel is included in the multi-channel tuning table.
     extern void MTS_SetMultiChannel(bool set, char midichannel);
     
     // Set frequencies for 128 MIDI notes on a specific MIDI channel.

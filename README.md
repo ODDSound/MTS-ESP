@@ -1,21 +1,31 @@
 # MTS-ESP Library
 
-The MTS-ESP library is a simple but versatile C/C++ library for adding microtuning support to audio and MIDI plugins. It allows for a single master plugin to simultaneously control the tuning of any number of connected client plugins across a DAW session.
+The MTS-ESP library is a simple but versatile C/C++ library for adding microtuning support to audio and MIDI plugins.  It allows for a single master plugin to simultaneously control the tuning of any number of connected client plugins across a DAW session.
 
-Connection between a master and clients is automatic and invisible.  It occurs through a dynamic library, therefore it is required that all MTS-ESP plugins run in the same process.  Any DAWs which allow plugin sandboxing (e.g. Bitwig, Tracktion Waveform) will need to be configured accordingly.  IPC support will be added in due course.
+Connection between a master and clients is automatic and invisible.  It occurs through a dynamic library, therefore it is required that all MTS-ESP plugins run in the same process.  Any DAWs which allow plugin sandboxing (e.g. Bitwig, FLStudio) will need to be configured accordingly.  IPC support will be added in due course.
 
-A free master plugin, ODDSound MTS-ESP Mini Master, supports loading of .scl, .kbm and .tun files and provides a simple way for users to start using the MTS-ESP system.
+A free master plugin, [ODDSound MTS-ESP Mini Master](https://oddsound.com/mtsespmini.php), supports loading of .scl, .kbm and .tun files and provides a simple, no-cost way for anyone to start using MTS-ESP.
+
+**Most developers will have no reason to read further than the Client section below, the rest is not essential unless you plan to build a master plugin.**
 
 
 ## Client
 
-Any plugin that receives and processes MIDI note data can be made compatible with MTS-ESP using the MTS Client library.  All it takes is to include libMTSClient.h and libMTSClient.cpp from the 'Client' folder in your build.
+Any plugin that receives and processes MIDI note data can be made compatible with MTS-ESP using the Client API.  All it takes is to include libMTSClient.h and libMTSClient.cpp from the 'Client' folder in your build.
 
-A client can query the re-tuning for a given MIDI note number either as an absolute frequency value or as the difference from the standard 12-TET tuning (i.e. 440*2^((midi_note-69) / 12)).   **NOTE:** Ideally it should do this as often as possible whilst a note is being played or sound is being processed, not just when a note on is received, so that note frequencies can update in real-time (along the flight of a note) if the tuning is changed or automated in the master plugin.
+A client can query the re-tuning for a given MIDI note number either as an absolute frequency value or as the difference from the standard 12-TET tuning (i.e. 440*2^((midi_note-69) / 12)).  **NOTE:** Ideally it should do this as often as possible whilst a note is playing or sound is being processed, not just when a note-on is received, so that note frequencies can update in real-time (along the flight of a note) if the tuning is changed or automated in the master plugin.
 
-When a note on message is received, a client should check to see if the note should be filtered out and ignored.  This allows a master plugin to define a keyboard map that includes unmapped keys.
+When not connected to a master plugin, a client will automatically revert to a local tuning table, set to 12-TET by default.  As a bonus, this local tuning table can be updated with MIDI Tuning Standard (MTS) sysex messages.  The client API includes a function that parses incoming MIDI sysex data and identifies all message formats defined in the MTS standard.  Therefore even without using the MTS-ESP system, the client API can still add microtuning support to a plugin.
 
-When not connected to a master plugin, a client will revert to a local tuning table, set to 12-TET by default.  As a bonus, this local tuning table can be updated with MIDI Tuning Standard (MTS) sysex messages.  The client library includes a function that parses incoming MIDI sysex data and identifies all message formats defined in the MTS standard.  Therefore even without using the MTS-ESP system, the client library can still add microtuning support to a plugin.
+Some other useful optional implementation suggestions include:
+
+* When a note-on message is received, a client should check to see if the note should be filtered out and ignored.  This allows a master plugin to define a keyboard map that includes unmapped keys.
+* Allow users the choice of querying retuning only at note-on, or continously whilst notes are playing.
+* Display the MTS-ESP connection status on your UI.
+
+## Max Package
+
+A [Max Package](http://github.com/ODDSound/MTS-ESP-Max-Package) is available which includes objects that allow Max for Live devices to support MTS-ESP as a client.  Source code for the Max objects is included.
 
 
 ## Master
@@ -29,9 +39,9 @@ A master can optionally specify notes that clients should filter out, allowing e
 
 ## Multi-Channel Mapping
 
-The MTS-ESP library includes support for multi-channel keyboard mappings, usually used with MIDI controllers designed for microtonal music and having more than 128 keys.
+The MTS-ESP library includes support for multi-channel tuning tables, usually used with MIDI controllers designed for microtonal music and having more than 128 keys.
 
-It is optional for a client to provide a MIDI channel when querying tuning or whether a note should be filtered, as with some plugins the channel data may not be available.  For a client plugin to support multi-channel mappings it must supply a MIDI channel wherever possible.  The MTS-ESP library automatically detects if this is the case and will flag a client as able to support a multi-channel mapping. Since this is not guaranteed, any master plugin that implements multi-channel mapping should also provide a regular single-channel mapping as a fallback.
+It is optional for a client to provide a MIDI channel when querying tuning or whether a note should be filtered, as with some plugins the channel data may not be available.  For a client plugin to support multi-channel tuning tables it must supply a MIDI channel wherever possible.  The MTS-ESP library automatically detects if this is the case and will flag a client as able to support multi-channel tuning tables.  Since this is not guaranteed, any master plugin that implements multi-channel tuning tables should also provide a regular single-channel tuning table as a fallback.
 
 
 ## libMTS
@@ -44,11 +54,6 @@ This is the dynamic library through which a master connects to clients.  If you 
 **Linux:** /usr/local/lib  
   
 Windows and OSX Installers are provided which you can bundle into your own installer or, if you prefer, just include the library files and install to the above locations.  The Mac installers are notarised and compatible with OSX 10.15+.
-
-
-## Max Package
-
-A [Max Package](http://github.com/ODDSound/MTS-ESP-Max-Package) is available which includes objects that allow Max for Live devices to support MTS-ESP as a Client.  Source code for the Max objects is included.
 
 
 For any queries, assistance or bug reports contact tech@oddsound.com.
