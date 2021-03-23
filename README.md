@@ -4,7 +4,7 @@ The MTS-ESP library is a simple but versatile C/C++ library for adding microtuni
 
 Connection between a master and clients is automatic and invisible.  It occurs through a dynamic library, therefore it is required that all MTS-ESP plugins run in the same process.  Any DAWs which allow plugin sandboxing (e.g. Bitwig, FLStudio) will need to be configured accordingly.  IPC support will be added in due course.
 
-A free master plugin, ODDSound MTS-ESP Mini Master, supports loading of .scl, .kbm and .tun files and provides a simple, no-cost way for anyone to start using MTS-ESP.
+A free master plugin, [ODDSound MTS-ESP Mini](https://oddsound.com/mtsespmini.php), supports loading of .scl, .kbm and .tun files and provides a simple, no-cost way for anyone to start using MTS-ESP.
 
 **Most developers will have no reason to read further than the Client section below, the rest is not essential unless you plan to build a master plugin.**
 
