@@ -160,7 +160,7 @@ struct MTSClient
     {
         supportsMTSSysex=true;
         int sysex_ctr=0,sysex_value=0,note=0,numTunings=0;
-        int bank=-1,prog=0,checksum=0;short int channelBitmap=0;   // maybe we'll want to use these at some point
+        int bank=-1,prog=0,checksum=0,deviceID=0;short int channelBitmap=0;   // maybe we'll want to use these at some point
         eSysexState state=eIgnoring;eMTSFormat format=eBulk;bool realtime=false;
         for (int i=0;i<len;i++)
         {
@@ -173,15 +173,15 @@ struct MTSClient
                     break;
                 case eMatchingSysex:
                     sysex_ctr=0;
-                    if (b==0x7E) state=eSysexValid;
-                    else if (b==0x7F) {realtime=true;state=eSysexValid;}
-                    else state=eMatchingSysex;   // don't switch to ignoring...Scala adds two bytes here, we need to skip over them
+                    if (b==0x7E) {state=eSysexValid;sysex_ctr=0;}
+                    else if (b==0x7F) {realtime=true;state=eSysexValid;sysex_ctr=0;}
+                    else state=eIgnoring;
                     break;
                 case eSysexValid:
                     switch (sysex_ctr++)    // handle device ID
                     {
-                        case 0: case 2: break;
-                        case 1: case 3: if (b==0x08) state=eMatchingMTS; break; // no extended device IDs have byte 2 set to 0x08, so this is a safe check for MTS message
+                        case 0: deviceID=b; break;
+                        case 1: if (b==0x08) state=eMatchingMTS; break;
                         default: state=eIgnoring; break;    // it's not an MTS message
                     }
                     break;
