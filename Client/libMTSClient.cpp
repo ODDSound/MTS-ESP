@@ -166,6 +166,7 @@ struct MTSClient
         {
             unsigned char b=buffer[i];
             if (b==0xF7) {state=eIgnoring;continue;}
+            if (b>0x7F && b!=0xF0) continue;
             switch (state)
             {
                 case eIgnoring:
@@ -229,7 +230,7 @@ struct MTSClient
                     switch (format)
                     {
                         case eBulk:
-                            sysex_value=(sysex_value<<7)|(b&127);
+                            sysex_value=(sysex_value<<7)|b;
                             sysex_ctr++;
                             if ((sysex_ctr&3)==3)
                             {
@@ -239,7 +240,7 @@ struct MTSClient
                             }
                             break;
                         case eSingle:
-                            sysex_value=(sysex_value<<7)|(b&127);
+                            sysex_value=(sysex_value<<7)|b;
                             sysex_ctr++;
                             if (!(sysex_ctr&3))
                             {
@@ -249,11 +250,11 @@ struct MTSClient
                             }
                             break;
                         case eScaleOctOneByte: case eScaleOctOneByteExt:
-                            for (int i=sysex_ctr;i<128;i+=12) updateTuning(i,i,((double)(b&127)-64.)*0.01);
+                            for (int i=sysex_ctr;i<128;i+=12) updateTuning(i,i,((double)b-64.)*0.01);
                             if (++sysex_ctr>=12) state=format==eScaleOctOneByte?eCheckSum:eIgnoring;
                             break;
                         case eScaleOctTwoByte: case eScaleOctTwoByteExt:
-                            sysex_value=(sysex_value<<7)|(b&127);
+                            sysex_value=(sysex_value<<7)|b;
                             sysex_ctr++;
                             if (!(sysex_ctr&1))
                             {
