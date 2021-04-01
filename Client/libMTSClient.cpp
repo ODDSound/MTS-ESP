@@ -173,8 +173,8 @@ struct MTSClient
                     break;
                 case eMatchingSysex:
                     sysex_ctr=0;
-                    if (b==0x7E) {state=eSysexValid;sysex_ctr=0;}
-                    else if (b==0x7F) {realtime=true;state=eSysexValid;sysex_ctr=0;}
+                    if (b==0x7E) state=eSysexValid;
+                    else if (b==0x7F) {realtime=true;state=eSysexValid;}
                     else state=eIgnoring;
                     break;
                 case eSysexValid:
