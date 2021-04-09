@@ -13,7 +13,7 @@ THIS SOFTWARE.
 #define MTS_ESP_WIN
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <tchar.h>
+#include <shlobj_core.h>
 #else
 #include <dlfcn.h>
 #endif
@@ -45,11 +45,19 @@ struct mtsclientglobal
 #ifdef MTS_ESP_WIN
     virtual void load_lib()
 	{
-		TCHAR buffer[MAX_PATH];
-		const TCHAR *libpath=TEXT("\\LIBMTS.dll");
-		GetSystemDirectory(buffer,MAX_PATH);
-        _tcscat(buffer,libpath);
-		if (!(handle=LoadLibrary(buffer))) return;
+		PWSTR cf=NULL;
+		if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_ProgramFilesCommon,0,0,&cf)))
+		{
+			WCHAR buffer[MAX_PATH];
+			wcsncpy(buffer,cf,MAX_PATH);
+			CoTaskMemFree(cf);
+			buffer[MAX_PATH-1]=L'\0';
+			const WCHAR *libpath=L"\\MTS-ESP\\LIBMTS.dll";
+			DWORD len=wcslen(buffer);
+			wcsncat(buffer,libpath,MAX_PATH-len-1);
+			if (!(handle=LoadLibraryW(buffer))) return;
+		}
+		else {CoTaskMemFree(cf);return;}
         RegisterClient                  =(mts_void) GetProcAddress(handle,"MTS_RegisterClient");
         DeregisterClient                =(mts_void) GetProcAddress(handle,"MTS_DeregisterClient");
         HasMaster                       =(mts_bool) GetProcAddress(handle,"MTS_HasMaster");
