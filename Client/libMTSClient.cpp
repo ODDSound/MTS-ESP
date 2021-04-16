@@ -13,7 +13,8 @@ THIS SOFTWARE.
 #define MTS_ESP_WIN
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <shlobj_core.h>
+typedef HRESULT (WINAPI* SHGetKnownFolderPathFunc) (const GUID*,DWORD,HANDLE,PWSTR*);
+typedef void (WINAPI* CoTaskMemFreeFunc) (LPVOID);
 #else
 #include <dlfcn.h>
 #endif
@@ -45,19 +46,30 @@ struct mtsclientglobal
 #ifdef MTS_ESP_WIN
     virtual void load_lib()
 	{
-		PWSTR cf=NULL;
-		if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_ProgramFilesCommon,0,0,&cf)))
-		{
-			WCHAR buffer[MAX_PATH];
-			wcsncpy(buffer,cf,MAX_PATH);
-			CoTaskMemFree(cf);
-			buffer[MAX_PATH-1]=L'\0';
-			const WCHAR *libpath=L"\\MTS-ESP\\LIBMTS.dll";
-			DWORD len=wcslen(buffer);
-			wcsncat(buffer,libpath,MAX_PATH-len-1);
-			if (!(handle=LoadLibraryW(buffer))) return;
-		}
-		else {CoTaskMemFree(cf);return;}
+        SHGetKnownFolderPathFunc SHGetKnownFolderPath=0;
+        CoTaskMemFreeFunc CoTaskMemFree=0;
+        HMODULE shell32Module=GetModuleHandleW(L"Shell32.dll");
+        HMODULE ole32Module=GetModuleHandleW(L"Ole32.dll");
+        if (shell32Module) SHGetKnownFolderPath=(SHGetKnownFolderPathFunc)GetProcAddress(shell32Module,"SHGetKnownFolderPath");
+        if (ole32Module) CoTaskMemFree=(CoTaskMemFreeFunc)GetProcAddress(ole32Module,"CoTaskMemFree");
+        if (SHGetKnownFolderPath && CoTaskMemFree)
+        {
+            const GUID FOLDERID_ProgramFilesCommonGUID={0xF7F1ED05,0x9F6D,0x47A2,0xAA,0xAE,0x29,0xD3,0x17,0xC6,0xF0,0x66};
+            PWSTR cf=NULL;
+            if (SHGetKnownFolderPath(&FOLDERID_ProgramFilesCommonGUID,0,0,&cf)>=0)
+            {
+                WCHAR buffer[MAX_PATH];buffer[0]=L'\0';
+                if (cf) wcsncpy(buffer,cf,MAX_PATH);
+                CoTaskMemFree(cf);
+                buffer[MAX_PATH-1]=L'\0';
+                const WCHAR *libpath=L"\\MTS-ESP\\LIBMTS.dll";
+                DWORD cfLen=wcslen(buffer);
+                wcsncat(buffer,libpath,MAX_PATH-cfLen-1);
+                if (!(handle=LoadLibraryW(buffer))) return;
+            }
+            else {CoTaskMemFree(cf);return;}
+        }
+        else return;
         RegisterClient                  =(mts_void) GetProcAddress(handle,"MTS_RegisterClient");
         DeregisterClient                =(mts_void) GetProcAddress(handle,"MTS_DeregisterClient");
         HasMaster                       =(mts_bool) GetProcAddress(handle,"MTS_HasMaster");
