@@ -58,7 +58,7 @@ Windows and OSX Installers are provided which you can bundle into your own insta
 
 ## IPC Support
 
-MTS-ESP supports inter-process communication, to allow for hosts which can run plug-ins in separate processes.  If the process in which the master plug-in is running crashes, it will not have a chance to de-register itself and clear the flag in MTS-ESP that keeps track of whether a Master is instanced.  For this case, a function is provided with which a master plug-in can re-initialize the MTS-ESP library to its default state, after which the it can attempt to register itself again.
+MTS-ESP supports inter-process communication, to allow for hosts which can run plug-ins in separate processes.  If the process in which the master plug-in is running crashes, it will not have a chance to de-register itself and clear the flag in MTS-ESP that keeps track of whether a Master is instanced.  For this case, a function is provided with which a master plug-in can re-initialize the MTS-ESP library to its default state, after which it can attempt to register itself again.
 
 It is possible to disable IPC support by editing the config file in this repo, MTS-ESP.conf, and placing it at:
 
@@ -67,7 +67,7 @@ It is possible to disable IPC support by editing the config file in this repo, M
 **Mac OSX:** /Library/Application Support/MTS-ESP
 **Linux:** /usr/local/etc
 
-If the file is not found, IPC support will be enabled by default.  It is important that the function to re-initialize MTS-ESP is only called if IPC is enabled.  A function is provided so a master plug-in can check if this is the case.
+If the file is not found, IPC support will be enabled by default.  It is important that the function to re-initialize MTS-ESP is only called if IPC is enabled.  A further function is provided so a master plug-in can check if this is the case.
 
 
 For any queries, assistance or bug reports contact tech@oddsound.com.
