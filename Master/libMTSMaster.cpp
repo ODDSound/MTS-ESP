@@ -18,8 +18,7 @@ typedef void (WINAPI* CoTaskMemFreeFunc) (LPVOID);
 #include <dlfcn.h>
 #endif
 
-typedef void *(*Callback)(int);
-typedef void (*mts_c)(Callback);
+typedef void (*mts_c)(void*);
 typedef void (*mts_void)(void);
 typedef bool (*mts_bool)(void);
 typedef int (*mts_int)(void);
@@ -34,11 +33,11 @@ typedef void (*mts_char)(char);
 
 struct mtsmasterglobal
 {
-	mtsmasterglobal() : RegisterMaster(0), DeregisterMaster(0), HasMaster(0), GetNumClients(0), SetNoteTunings(0), SetNoteTuning(0), SetScaleName(0), FilterNote(0), ClearNoteFilter(0), SetMultiChannel(0), SetMultiChannelNoteTunings(0), SetMultiChannelNoteTuning(0), FilterNoteMultiChannel(0), ClearNoteFilterMultiChannel(0), handle(0)
+	mtsmasterglobal() : RegisterMaster(0), DeregisterMaster(0), Reinitialize(0), HasMaster(0), HasIPC(0), GetNumClients(0), SetNoteTunings(0), SetNoteTuning(0), SetScaleName(0), FilterNote(0), ClearNoteFilter(0), SetMultiChannel(0), SetMultiChannelNoteTunings(0), SetMultiChannelNoteTuning(0), FilterNoteMultiChannel(0), ClearNoteFilterMultiChannel(0), handle(0)
     {
 		load_lib();
 	}
-    mts_c RegisterMaster;mts_void DeregisterMaster;mts_bool HasMaster;mts_int GetNumClients;mts_pcd SetNoteTunings;mts_dc SetNoteTuning;mts_pcc SetScaleName;mts_bcc FilterNote;mts_void ClearNoteFilter;mts_bc SetMultiChannel;mts_pcdc SetMultiChannelNoteTunings;mts_dcc SetMultiChannelNoteTuning;mts_bcc FilterNoteMultiChannel;mts_char ClearNoteFilterMultiChannel;
+    mts_c RegisterMaster;mts_void DeregisterMaster,Reinitialize;mts_bool HasMaster,HasIPC;mts_int GetNumClients;mts_pcd SetNoteTunings;mts_dc SetNoteTuning;mts_pcc SetScaleName;mts_bcc FilterNote;mts_void ClearNoteFilter;mts_bc SetMultiChannel;mts_pcdc SetMultiChannelNoteTunings;mts_dcc SetMultiChannelNoteTuning;mts_bcc FilterNoteMultiChannel;mts_char ClearNoteFilterMultiChannel;
 	
 #ifdef MTS_ESP_WIN
 	void load_lib()
@@ -70,6 +69,8 @@ struct mtsmasterglobal
         RegisterMaster              =(mts_c)    GetProcAddress(handle,"MTS_RegisterMaster");
         DeregisterMaster            =(mts_void) GetProcAddress(handle,"MTS_DeregisterMaster");
         HasMaster                   =(mts_bool) GetProcAddress(handle,"MTS_HasMaster");
+        HasIPC                      =(mts_bool) GetProcAddress(handle,"MTS_HasIPC");
+        Reinitialize                =(mts_void) GetProcAddress(handle,"MTS_Reinitialize");
         GetNumClients               =(mts_int)  GetProcAddress(handle,"MTS_GetNumClients");
         SetNoteTunings              =(mts_pcd)  GetProcAddress(handle,"MTS_SetNoteTunings");
         SetNoteTuning               =(mts_dc)   GetProcAddress(handle,"MTS_SetNoteTuning");
@@ -92,6 +93,8 @@ struct mtsmasterglobal
         RegisterMaster              =(mts_c)    dlsym(handle,"MTS_RegisterMaster");
         DeregisterMaster            =(mts_void) dlsym(handle,"MTS_DeregisterMaster");
         HasMaster                   =(mts_bool) dlsym(handle,"MTS_HasMaster");
+        HasIPC                      =(mts_bool) dlsym(handle,"MTS_HasIPC");
+        Reinitialize                =(mts_void) dlsym(handle,"MTS_Reinitialize");
         GetNumClients               =(mts_int)  dlsym(handle,"MTS_GetNumClients");
         SetNoteTunings              =(mts_pcd)  dlsym(handle,"MTS_SetNoteTunings");
         SetNoteTuning               =(mts_dc)   dlsym(handle,"MTS_SetNoteTuning");
@@ -114,6 +117,8 @@ static mtsmasterglobal global;
 void MTS_RegisterMaster()                                                       {if (global.RegisterMaster) global.RegisterMaster(0);}
 void MTS_DeregisterMaster()                                                     {if (global.DeregisterMaster) global.DeregisterMaster();}
 bool MTS_HasMaster()                                                            {return global.HasMaster?global.HasMaster():false;}
+bool MTS_HasIPC()                                                               {return global.HasIPC?global.HasIPC():false;}
+void MTS_Reinitialize()                                                         {if (global.Reinitialize) global.Reinitialize();}
 int  MTS_GetNumClients()				                                        {return global.GetNumClients?global.GetNumClients():0;}
 void MTS_SetNoteTunings(const double *freqs)                                    {if (global.SetNoteTunings) global.SetNoteTunings(freqs);}
 void MTS_SetNoteTuning(double freq,char midinote)                               {if (global.SetNoteTuning) global.SetNoteTuning(freq,midinote);}

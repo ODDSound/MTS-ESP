@@ -83,6 +83,18 @@ extern "C" {
      Clients that don't provide a MIDI channel will use the frequencies and note filtering provided using
      the non-multi-channel functions, therefore it is advised to always provide a general tuning table in addition
      to a multi-channel one.
+     
+     
+     IPC support:
+     
+     MTS_HasIPC() allows you to check if the process in which the plug-in is running is using IPC for sharing MTS-ESP
+     tuning data. If a DAW crashes, MTS_DeregisterMaster() may not get called. If this happens when using IPC the
+     shared memory will persist and MTS_HasMaster() will still return true, even if no other master is instanced.
+     To allow for this case we have included the MTS_Reinitialize() function which will reset the MTS-ESP library,
+     including tuning tables, scale name, note filters, client count and master connection status.
+     
+     IMPORTANT: ONLY if both MTS_HasMaster() and MTS_HasIPC() return true is it advisable to offer an option to
+     the user to reinitialize MTS-ESP. Follow re-initialization with a call to MTS_RegisterMaster().
 
      */
 
@@ -94,6 +106,14 @@ extern "C" {
     // Check if a master plugin is already instanced before registering, as only one Master may be registered at any one time.
     extern bool MTS_HasMaster();
 
+    // Check if the process in which the master plug-in is running is using IPC for sharing MTS-ESP tuning data.
+    extern bool MTS_HasIPC();
+    
+    // Reset everything in the MTS-ESP library, including the master connnection status and client count.
+    // IMPORTANT: This is only intended to be called if IPC is in use and only after the process in which the master
+    // plug-in is running crashes.
+    extern void MTS_Reinitialize();
+    
     // Returns the number of connected clients.
     extern int MTS_GetNumClients();
 
