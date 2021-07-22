@@ -28,9 +28,9 @@ extern "C" {
         MTS_DeregisterMaster();
 
 
-     To determine whether the user has already instanced a master (don’t instance if so) call:
+     To determine whether the user has already instanced a master (don’t instance if this returns false) call:
 
-        bool already_have_a_master = MTS_HasMaster();
+        bool can_register_master = MTS_CanRegisterMaster();
 
 
      To configure the tunings for the entire session, call:
@@ -104,7 +104,8 @@ extern "C" {
     extern void MTS_DeregisterMaster();
 
     // Check if a master plugin is already instanced before registering, as only one Master may be registered at any one time.
-    extern bool MTS_HasMaster();
+    // Don't call MTS_RegisterMaster() if this returns false.
+    extern bool MTS_CanRegisterMaster();
 
     // Check if the process in which the master plug-in is running is using IPC for sharing MTS-ESP tuning data.
     extern bool MTS_HasIPC();

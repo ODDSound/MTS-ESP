@@ -116,7 +116,7 @@ static mtsmasterglobal global;
 
 void MTS_RegisterMaster()                                                       {if (global.RegisterMaster) global.RegisterMaster(0);}
 void MTS_DeregisterMaster()                                                     {if (global.DeregisterMaster) global.DeregisterMaster();}
-bool MTS_HasMaster()                                                            {return global.HasMaster?global.HasMaster():false;}
+bool MTS_CanRegisterMaster()                                                    {return global.HasMaster?!global.HasMaster():true;}
 bool MTS_HasIPC()                                                               {return global.HasIPC?global.HasIPC():false;}
 void MTS_Reinitialize()                                                         {if (global.Reinitialize) global.Reinitialize();}
 int  MTS_GetNumClients()				                                        {return global.GetNumClients?global.GetNumClients():0;}
