@@ -106,7 +106,7 @@ static mtsclientglobal global;
 
 struct MTSClient
 {
-    MTSClient() : tuningName("12-TET"), supportsMultiChannelNoteFiltering(false), supportsMultiChannelTuning(false), freqRequestReceived(false), supportsMTSSysex(false)
+    MTSClient() : tuningName("12-TET"), supportsNoteFiltering(false), supportsMultiChannelNoteFiltering(false), supportsMultiChannelTuning(false), freqRequestReceived(false), supportsMTSSysex(false)
     {
         for (int i=0;i<128;i++) retuning[i]=440.*pow(2.,(i-69.)/12.);
         if (global.RegisterClient) global.RegisterClient();
@@ -118,7 +118,7 @@ struct MTSClient
         freqRequestReceived=true;
         supportsMultiChannelTuning=!(midichannel&~15);
         if (!global.isOnline()) return retuning[midinote&127];
-        if (supportsMultiChannelNoteFiltering && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
+        if ((!supportsNoteFiltering || supportsMultiChannelNoteFiltering) && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
         {
             return global.multi_channel_esp_retuning[midichannel&15][midinote&127];
         }
@@ -129,7 +129,7 @@ struct MTSClient
         freqRequestReceived=true;
         supportsMultiChannelTuning=!(midichannel&~15);
         if (!global.isOnline()) return supportsMTSSysex?retuning[midinote&127]*global.iet[midinote&127]:1.;
-        if (supportsMultiChannelNoteFiltering && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
+        if ((!supportsNoteFiltering || supportsMultiChannelNoteFiltering) && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
         {
             return global.multi_channel_esp_retuning[midichannel&15][midinote&127]*global.iet[midinote&127];
         }
@@ -140,7 +140,7 @@ struct MTSClient
         freqRequestReceived=true;
         supportsMultiChannelTuning=!(midichannel&~15);
         if (!global.isOnline()) return supportsMTSSysex?ratioToSemitones*log(retuning[midinote&127]*global.iet[midinote&127]):0.;
-        if (supportsMultiChannelNoteFiltering && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
+        if ((!supportsNoteFiltering || supportsMultiChannelNoteFiltering) && supportsMultiChannelTuning && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
         {
             return ratioToSemitones*log(global.multi_channel_esp_retuning[midichannel&15][midinote&127]*global.iet[midinote&127]);
         }
@@ -148,6 +148,7 @@ struct MTSClient
     }
     inline bool shouldFilterNote(char midinote,char midichannel)
     {
+        supportsNoteFiltering=true;
         supportsMultiChannelNoteFiltering=!(midichannel&~15);
         if (!freqRequestReceived) supportsMultiChannelTuning=supportsMultiChannelNoteFiltering;    // assume it supports multi channel tuning until we receive a request for a frequency and can verify
         if (!global.isOnline()) return false;
@@ -305,7 +306,7 @@ struct MTSClient
 
     double retuning[128];
     char tuningName[17];
-    bool supportsMultiChannelNoteFiltering,supportsMultiChannelTuning,freqRequestReceived,supportsMTSSysex;
+    bool supportsNoteFiltering,supportsMultiChannelNoteFiltering,supportsMultiChannelTuning,freqRequestReceived,supportsMTSSysex;
 };
 
 static char freqToNoteET(double freq)
