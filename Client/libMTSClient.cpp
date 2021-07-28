@@ -181,8 +181,8 @@ struct MTSClient
     {
         supportsMTSSysex=true;
         int sysex_ctr=0,sysex_value=0,note=0,numTunings=0;
-        /*int bank=-1,prog=0,checksum=0,deviceID=0;short int channelBitmap=0;*/   // maybe we'll want to use these at some point
-        eSysexState state=eIgnoring;eMTSFormat format=eBulk;bool realtime=false;
+        /*int bank=-1,prog=0,checksum=0,deviceID=0;short int channelBitmap=0;bool realtime=false;*/   // maybe we'll want to use these at some point
+        eSysexState state=eIgnoring;eMTSFormat format=eBulk;
         for (int i=0;i<len;i++)
         {
             unsigned char b=buffer[i];
@@ -196,7 +196,7 @@ struct MTSClient
                 case eMatchingSysex:
                     sysex_ctr=0;
                     if (b==0x7E) state=eSysexValid;
-                    else if (b==0x7F) {realtime=true;state=eSysexValid;}
+                    else if (b==0x7F) {/*realtime=true;*/state=eSysexValid;}
                     else state=eIgnoring;
                     break;
                 case eSysexValid:
