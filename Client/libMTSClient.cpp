@@ -181,7 +181,7 @@ struct MTSClient
     {
         supportsMTSSysex=true;
         int sysex_ctr=0,sysex_value=0,note=0,numTunings=0;
-        int bank=-1,prog=0,checksum=0,deviceID=0;short int channelBitmap=0;   // maybe we'll want to use these at some point
+        /*int bank=-1,prog=0,checksum=0,deviceID=0;short int channelBitmap=0;*/   // maybe we'll want to use these at some point
         eSysexState state=eIgnoring;eMTSFormat format=eBulk;bool realtime=false;
         for (int i=0;i<len;i++)
         {
@@ -202,7 +202,7 @@ struct MTSClient
                 case eSysexValid:
                     switch (sysex_ctr++)    // handle device ID
                     {
-                        case 0: deviceID=b; break;
+                        case 0: /*deviceID=b;*/ break;
                         case 1: if (b==0x08) state=eMatchingMTS; break;
                         default: state=eIgnoring; break;    // it's not an MTS message
                     }
@@ -225,11 +225,11 @@ struct MTSClient
                     }
                     break;
                 case eMatchingBank:
-                    bank=b;
+                    /*bank=b;*/
                     state=eMatchingProg;
                     break;
                 case eMatchingProg:
-                    prog=b;
+                    /*prog=b;*/
                     if (format==eSingle) state=eNumTunings;else {state=eTuningName;tuningName[0]='\0';}
                     break;
                 case eTuningName:
@@ -242,9 +242,9 @@ struct MTSClient
                 case eMatchingChannel:
                     switch (sysex_ctr++)
                     {
-                        case 0: for (int j=14;j<16;j++) channelBitmap|=(1<<j); break;
-                        case 1: for (int j=7;j<14;j++) channelBitmap|=(1<<j); break;
-                        case 2: for (int j=0;j<7;j++) channelBitmap|=(1<<j);sysex_ctr=0;state=eTuningData; break;
+                        case 0: /*for (int j=14;j<16;j++) channelBitmap|=(1<<j);*/ break;
+                        case 1: /*for (int j=7;j<14;j++) channelBitmap|=(1<<j);*/ break;
+                        case 2: /*for (int j=0;j<7;j++) channelBitmap|=(1<<j);*/sysex_ctr=0;state=eTuningData; break;
                     }
                     break;
                 case eTuningData:
@@ -288,7 +288,7 @@ struct MTSClient
                     }
                     break;
                 case eCheckSum:
-                    checksum=b;
+                    /*checksum=b;*/
                     state=eIgnoring;
                     break;
             }
