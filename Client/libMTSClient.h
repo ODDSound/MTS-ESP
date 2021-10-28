@@ -51,9 +51,11 @@ extern "C" {
      if you don’t have the midi channel, use -1, however supplying it allows a master to dedicate notes on specific
      channels for e.g. key switches to change tunings.
      
-     A helper function is available which returns the MIDI note number whose pitch is nearest a given frequency.
-     The MIDI note number returned is guaranteed to be mapped. If the destination channel for the MIDI note is
-     known it should be supplied so that any channel-specific note filtering can be respected.
+     Helper functions are available which return the MIDI note whose pitch is nearest a given frequency.
+     The MIDI note returned is guaranteed to be mapped. If you intend to generate a note-on message using the
+     returned note number, you may already know which MIDI channel you will send it on, in which case you can specify this in
+     the call, else the client library can prescribe a channel for you. This is done so that multi-channel mapping
+     and note filtering can be respected. See below for further details.
 
      To add support for MIDI Tuning System (or MTS, from the MIDI specification) SysEx messages to your plugin,
      implement the above and, when given SysEx, call:
@@ -92,8 +94,15 @@ extern "C" {
     extern double MTS_RetuningInSemitones(MTSClient *client, char midinote, char midichannel);
     extern double MTS_RetuningAsRatio(MTSClient *client, char midinote, char midichannel);
     
-    // Returns the note number whose pitch is closest to that supplied. Destination MIDI channel should be included if known (0-15), else set to -1.
+    // MTS_FrequencyToNote() is a helper function returning the note number whose pitch is closest to the supplied frequency. Two versions are provided:
+    // The first is for the simplest case: supply a frequency and get a note number back.
+    // If you intend to use the returned note number to generate a note-on message on a specific, pre-determined MIDI channel, set the midichannel argument to the destination channel (0-15), else set to -1.
+    // If a MIDI channel is supplied, the corresponding multi-channel tuning table will be queried if in use, else multi-channel tables are ignored.
     extern char MTS_FrequencyToNote(MTSClient *client, double freq, char midichannel);
+    // Use the second version if you intend to use the returned note number to generate a note-on message and where you have the possibility to send it on any MIDI channel.
+    // The midichannel argument is a pointer to a char which will receive the MIDI channel on which the note message should be sent (0-15).
+    // Multi-channel tuning tables are queried if in use.
+    extern char MTS_FrequencyToNoteAndChannel(MTSClient *client, double freq, char *midichannel);
     
     // Returns the name of the current scale.
     extern const char *MTS_GetScaleName(MTSClient *client);
