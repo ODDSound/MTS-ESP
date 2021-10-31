@@ -79,7 +79,7 @@ extern "C" {
     // Opaque datatype for MTSClient.
     typedef struct MTSClient MTSClient;
 
-    // Register/deregister as a client.  Call from the plugin constuctor and destructor.
+    // Register/deregister as a client.  Call from the plugin constructor and destructor.
     extern MTSClient *MTS_RegisterClient();
     extern void MTS_DeregisterClient(MTSClient *client);
 
