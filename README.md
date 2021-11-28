@@ -20,7 +20,7 @@ When not connected to a master plugin, a client will automatically revert to a l
 Some other useful optional implementation suggestions include:
 
 * When a note-on message is received, a client should check to see if the note should be filtered out and ignored.  This allows a master plugin to define a keyboard map that includes unmapped keys.
-* Allow users the choice of querying retuning only at note-on, or continously whilst notes are playing.
+* Allow users the choice of querying retuning only at note-on, or continuously whilst notes are playing.
 * Display the MTS-ESP connection status on your UI.
 
 ## Max Package

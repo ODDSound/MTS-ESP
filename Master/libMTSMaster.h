@@ -99,7 +99,7 @@ extern "C" {
      */
 
 
-    // Register/deregister as a master. Call from the plugin constuctor and destructor.
+    // Register/deregister as a master. Call from the plugin constructor and destructor.
     extern void MTS_RegisterMaster();
     extern void MTS_DeregisterMaster();
 
@@ -110,7 +110,7 @@ extern "C" {
     // Check if the process in which the master plug-in is running is using IPC for sharing MTS-ESP tuning data.
     extern bool MTS_HasIPC();
     
-    // Reset everything in the MTS-ESP library, including the master connnection status and client count.
+    // Reset everything in the MTS-ESP library, including the master connection status and client count.
     // IMPORTANT: This is only intended to be called if IPC is in use and only after the process in which the master
     // plug-in is running crashes.
     extern void MTS_Reinitialize();
@@ -133,7 +133,7 @@ extern "C" {
 
     //-------------------------------------------------------------------------------------------------------
 
-    // Optional set of funtions for mutli-channel tuning table.
+    // Optional set of functions for mutli-channel tuning table.
     // Range for midichannel arguments is 0-15.
 
     // Set whether a specific MIDI channel is included in the multi-channel tuning table.
