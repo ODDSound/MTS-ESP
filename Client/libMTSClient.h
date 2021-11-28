@@ -15,81 +15,123 @@ extern "C" {
 #endif
     
     /*
-     How to use libMTSClient:
-
-     On startup in the constructor:
+     Steps for using the MTS-ESP client API to add microtuning support to a plug-in.
+     Steps 1 and 2 are required, however it is recommended to include further steps when
+     integrating:
+     
+     
+     1. REQUIRED: Register and de-register a plug-in instance as a client with MTS-ESP.
+     On startup in the plug-in constructor call:
 
         MTSClient *client = MTS_RegisterClient();
 
-     On shutdown in the destructor:
+     Store the returned MTSClient pointer to supply when calling other MTS-ESP client API
+     functions. On shutdown in the plug-in destructor call:
 
         MTS_DeregisterClient(client);
 
-     When given a note:
+     
+     2. REQUIRED: Query retuning when a note-on message is received and adjust tuning accordingly.
+     When given a note call:
 
-        double f = MTS_NoteToFrequency(client, midinote, midichannel);
+        double freq = MTS_NoteToFrequency(client, midinote, midichannel);
      OR
         double retune_semitones = MTS_RetuningInSemitones(client, midinote, midichannel);
      OR
         double retune_ratio = MTS_RetuningAsRatio(client, midinote, midichannel);
 
-     If you don’t have the midi channel, use -1, but supplying the channel allows support for microtonal
-     MIDI controllers with more than 128 keys that use multi-channel tuning tables.
+     MIDI channel arguments should use the range [0,15] however if you don’t know the MIDI
+     channel, use -1 (see step 6 for more on MIDI channels).
 
-     ***NOTE***: Querying retune whilst a note is playing allows the tuning to change along the flight of the note,
-     which is the ideal, so do this if you can and as often as possible. Ideally at the same time as processing
-     any other pitch modulation sources (envelopes, MIDI controllers, LFOs etc.).
-
-     The Scala .kbm keyboard mapping file format allows for MIDI keys to be unmapped i.e. no frequency
-     is specified for them. The MTS-ESP library supports this. You can query whether a note
-     is unmapped and should be ignored with:
-
-        bool should_ignore_note = MTS_ShouldFilterNote(client, midinote, midichannel);
-
-     If this returns true, ignore the noteOn and don’t play anything. Calling this function is encouraged but
-     optional and a valid value for the frequency/retuning will still be returned for an unmapped note. Once again
-     if you don’t have the midi channel, use -1, however supplying it allows a master to dedicate notes on specific
-     channels for e.g. key switches to change tunings.
      
-     Helper functions are available which return the MIDI note whose pitch is nearest a given frequency.
-     The MIDI note returned is guaranteed to be mapped. If you intend to generate a note-on message using the
-     returned note number, you may already know which MIDI channel you will send it on, in which case you can specify this in
-     the call, else the client library can prescribe a channel for you. This is done so that multi-channel mapping
-     and note filtering can be respected. See below for further details.
+     3. RECOMMENDED: Continuously query retuning whilst a note is held, allowing tuning to change
+     along the flight of a note. Do this if you can and as often as possible, ideally at the same
+     time as processing any other pitch modulation sources (envelopes, MIDI controllers, LFOs etc.).
 
-     To add support for MIDI Tuning System (or MTS, from the MIDI specification) SysEx messages to your plugin,
-     implement the above and, when given SysEx, call:
-
+     
+     4. RECOMMENDED: Provide an option to the user to select whether tuning is queried at note-on
+     only, as in step 2, or continuously, as in step 3. There are creative and practical
+     advantages to both, depending on the use case, and offering an option to the user will
+     provide the most useful MTS-ESP integration. If not offering such an option, continuous
+     retuning should be preferred over note-on only retuning.
+     
+     
+     5. RECOMMENDED: Query whether a note should be sounded when a note-on message is received.
+     The Scala .kbm keyboard mapping format allows for MIDI keys to be unmapped i.e. no frequency
+     is specified for them, and the MTS-ESP library supports this too. You can query whether a note
+     is unmapped and should be ignored with:
+     
+        bool should_ignore_note = MTS_ShouldFilterNote(client, midinote, midichannel);
+     
+     If this returns true, ignore the note-on and don’t play anything. Calling this function is
+     recommended but optional and a valid value for frequency/retuning will be returned for an
+     unmapped note. MIDI channel arguments should use the range [0,15] however if you don’t
+     know the MIDI channel, use -1.
+     
+     
+     6. RECOMMENDED: Always supply a MIDI channel when querying retuning or note filtering. Doing
+     so allows your plug-in to multi-channel tuning tables, useful for microtonal MIDI controllers
+     with more than 128 keys or working with large scales. Even if multi-channel tables are not
+     in use, a master may still make use of channel-specific note filtering for functions such as
+     key switches to change tunings. If your plug-in supports MPE and has a switch for enabling MPE
+     support, it is recommended to NOT supply a MIDI channel if MPE is enabled.
+     
+     
+     7. RECOMMENDED: If you are adding MTS-ESP support to a plug-in that already has some kind
+     of microtuning support, e.g. loading .scl or .tun files, let the local tuning automatically
+     override MTS-ESP, or provide an option for MTS-ESP retuning to be explicitly disabled.
+     This affords a user the option to use a different tuning to the global MTS-ESP table
+     for a specific plug-in instance.
+     
+     
+     8. OPTIONAL: Add support for MIDI Tuning Standard (or MTS, from the MIDI specification) SysEx
+     messages to your plug-in. When not connected to an MTS-ESP master plug-in, these can be used
+     to retune it instead, providing microtuing support even when MTS-ESP is not in use.
+     When a SysEx message is received, call:
+     
         MTS_ParseMIDIData(client, buffer, len); // if buffer is signed char *
      OR
         MTS_ParseMIDIDataU(client, buffer, len); // if buffer is unsigned char *
-
-     If you want to display to the user whether you can see a Master in the session, call:
-
+     
+     These will update a local tuning table which is used when querying retuning as in steps 2
+     and 3.
+     
+     
+     9. OPTIONAL: If you want to display to the user whether the plug-in is "connnected" to an
+     MTS-ESP master plug-in, call:
+     
         bool has_master = MTS_HasMaster(client);
-
-     It is possible to query the name of the current scale.  This function is necessarily supplied for the case
-     where a client is sending MTS SysEx messages, however it can be used to display the current scale name
-     to the user on your UI too:
-
+     
+     
+     10: OPTIONAL: It is possible to query the name of the current scale. This function is necessarily
+     supplied for the case where a client is sending MTS SysEx messages, however it can be used
+     to display the current scale name to the user on your UI too:
+     
         const char *name = MTS_GetScaleName(client);
      
+     
+     11: EXTRAS: Helper functions are available which return the MIDI note whose pitch is nearest
+     a given frequency. The MIDI note returned is guaranteed to be mapped. If you intend to
+     generate a note-on message using the returned note number, you may already know which MIDI
+     channel it will be sent on, in which case you must specify this in the call, else the client
+     library can prescribe a channel for you. This is done so that multi-channel mapping
+     and note filtering can be respected. See below for further details.
      */
     
     // Opaque datatype for MTSClient.
     typedef struct MTSClient MTSClient;
 
-    // Register/deregister as a client.  Call from the plugin constructor and destructor.
+    // Register/deregister as a client. Call from the plugin constructor and destructor.
     extern MTSClient *MTS_RegisterClient();
     extern void MTS_DeregisterClient(MTSClient *client);
 
     // Check if the client is currently connected to a master plugin.
     extern bool MTS_HasMaster(MTSClient *client);
 
-    // Returns true if note should not be played. MIDI channel argument is optional but should be included if possible (0-15), else set to -1.
+    // Returns true if note should not be played. MIDI channel argument should be included if possible (0-15), else set to -1.
     extern bool MTS_ShouldFilterNote(MTSClient *client, char midinote, char midichannel);
 
-    // Retuning a midi note. Pick the version that makes your life easiest! MIDI channel argument is optional but should be included if possible (0-15), else set to -1.
+    // Retuning a midi note. Pick the version that makes your life easiest! MIDI channel argument should be included if possible (0-15), else set to -1.
     extern double MTS_NoteToFrequency(MTSClient *client, char midinote, char midichannel);
     extern double MTS_RetuningInSemitones(MTSClient *client, char midinote, char midichannel);
     extern double MTS_RetuningAsRatio(MTSClient *client, char midinote, char midichannel);
@@ -107,7 +149,7 @@ extern "C" {
     // Returns the name of the current scale.
     extern const char *MTS_GetScaleName(MTSClient *client);
 
-    // Parse incoming MIDI data to update local retuning.  All formats of MTS sysex message accepted.
+    // Parse incoming MIDI data to update local retuning. All formats of MTS sysex message accepted.
     extern void MTS_ParseMIDIDataU(MTSClient *client, const unsigned char *buffer, int len);
     extern void MTS_ParseMIDIData(MTSClient *client, const char *buffer, int len);
 
