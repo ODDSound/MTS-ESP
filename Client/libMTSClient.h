@@ -70,7 +70,7 @@ extern "C" {
      
      
      6. RECOMMENDED: Always supply a MIDI channel when querying retuning or note filtering. Doing
-     so allows your plug-in to multi-channel tuning tables, useful for microtonal MIDI controllers
+     so allows your plug-in to use multi-channel tuning tables, useful for microtonal MIDI controllers
      with more than 128 keys or working with large scales. Even if multi-channel tables are not
      in use, a master may still make use of channel-specific note filtering for functions such as
      key switches to change tunings. If your plug-in supports MPE and has a switch for enabling MPE
