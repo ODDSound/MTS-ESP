@@ -1,10 +1,8 @@
 # MTS-ESP Library
 
-The MTS-ESP library is a simple but versatile C/C++ library for adding microtuning support to audio and MIDI plugins.  It allows for a single master plugin to simultaneously control the tuning of any number of connected client plugins across a DAW session.
+The MTS-ESP library is a simple but versatile C/C++ library for adding microtuning support to audio and MIDI plugins.  It allows for a single master plugin to simultaneously control the tuning of any number of connected client plugins across a DAW session.  Connection between a master and clients is automatic and invisible.
 
-Connection between a master and clients is automatic and invisible.  It occurs through a dynamic library, therefore it is required that all MTS-ESP plugins run in the same process.  Any DAWs which allow plugin sandboxing (e.g. Bitwig, FLStudio) will need to be configured accordingly.  IPC support will be added in due course.
-
-A free master plugin, [ODDSound MTS-ESP Mini](https://oddsound.com/mtsespmini.php), supports loading of .scl, .kbm and .tun files and provides a simple, no-cost way for anyone to start using MTS-ESP.
+A free master plugin, [ODDSound MTS-ESP Mini](https://oddsound.com/mtsespmini.php), supports loading of .scl, .kbm, .tun and MTS SysEx files and provides a simple, no-cost way for anyone to start using MTS-ESP.
 
 **Most developers will have no reason to read further than the Client section below, the rest is not essential unless you plan to build a master plugin.**
 
@@ -15,7 +13,7 @@ Any plugin that receives and processes MIDI note data can be made compatible wit
 
 A client can query the re-tuning for a given MIDI note number either as an absolute frequency value or as the difference from the standard 12-TET tuning (i.e. 440*2^((midi_note-69) / 12)).  **NOTE:** Ideally it should do this as often as possible whilst a note is playing or sound is being processed, not just when a note-on is received, so that note frequencies can update in real-time (along the flight of a note) if the tuning is changed or automated in the master plugin.
 
-When not connected to a master plugin, a client will automatically revert to a local tuning table, set to 12-TET by default.  As a bonus, this local tuning table can be updated with MIDI Tuning Standard (MTS) sysex messages.  The client API includes a function that parses incoming MIDI sysex data and identifies all message formats defined in the MTS standard.  Therefore even without using the MTS-ESP system, the client API can still add microtuning support to a plugin.
+When not connected to a master plugin, a client will automatically revert to a local tuning table, set to 12-TET by default.  As a bonus, this local tuning table can be updated with MIDI Tuning Standard (MTS) SysEx messages.  The client API includes a function that parses incoming MIDI SysEx data and identifies all message formats defined in the MTS standard.  Therefore even without using the MTS-ESP system, the client API can still add microtuning support to a plugin.
 
 Some other useful optional implementation suggestions include:
 
