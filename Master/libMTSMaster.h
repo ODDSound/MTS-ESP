@@ -93,7 +93,7 @@ extern "C" {
      To allow for this case we have included the MTS_Reinitialize() function which will reset the MTS-ESP library,
      including tuning tables, scale name, note filters, client count and master connection status.
      
-     IMPORTANT: ONLY if both MTS_HasMaster() and MTS_HasIPC() return true is it advisable to offer an option to
+     IMPORTANT: ONLY if MTS_CanRegisterMaster() returns false and MTS_HasIPC() returns true is it advisable to offer an option to
      the user to reinitialize MTS-ESP. Follow re-initialization with a call to MTS_RegisterMaster().
 
      */
