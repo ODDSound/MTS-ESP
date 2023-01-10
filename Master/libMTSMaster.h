@@ -94,7 +94,25 @@ extern "C" {
      including tuning tables, scale name, note filters, client count and master connection status.
      
      IMPORTANT: ONLY if MTS_CanRegisterMaster() returns false and MTS_HasIPC() returns true is it advisable to offer an option to
-     the user to reinitialize MTS-ESP. Follow re-initialization with a call to MTS_RegisterMaster().
+     the user to reinitialize MTS-ESP. Follow reinitialization with a call to MTS_RegisterMaster(). The code for registering
+     as a master should follow this pattern:
+     
+         if (MTS_CanRegisterMaster())
+             MTS_RegisterMaster();
+         else
+         {
+             if (MTS_HasIPC())
+             {
+                 Warn user another master is already connected, but provide an option to reinitialize MTS-ESP in case there was a crash and no master is connected any more;
+                 if (user clicks to reinitialize MTS-ESP)
+                 {
+                     MTS_Reinitialize();
+                     MTS_RegisterMaster();
+                 }
+             }
+             else
+                 Warn user another master is already connected, do not provide an option to reinitialize MTS-ESP;
+         }
 
      */
 
