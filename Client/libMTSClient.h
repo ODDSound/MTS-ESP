@@ -86,7 +86,7 @@ extern "C" {
      
      8. OPTIONAL: Add support for MIDI Tuning Standard (or MTS, from the MIDI specification) SysEx
      messages to your plug-in. When not connected to an MTS-ESP master plug-in, these can be used
-     to retune it instead, providing microtuing support even when MTS-ESP is not in use.
+     to retune it instead, providing microtuning support even when MTS-ESP is not in use.
      When a SysEx message is received, call:
      
         MTS_ParseMIDIData(client, buffer, len); // if buffer is signed char *
@@ -97,7 +97,7 @@ extern "C" {
      and 3.
      
      
-     9. OPTIONAL: If you want to display to the user whether the plug-in is "connnected" to an
+     9. OPTIONAL: If you want to display to the user whether the plug-in is "connected" to an
      MTS-ESP master plug-in, call:
      
         bool has_master = MTS_HasMaster(client);
