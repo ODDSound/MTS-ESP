@@ -162,9 +162,9 @@ struct MTSClient
     {
         bool online=global.isOnline(),multiChannel=false;
         const double *freqs=online?global.esp_retuning:retuning;
-        if (online && !(midichannel&~15) && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel])
+        if (online && !(midichannel&~15) && global.UseMultiChannelTuning && global.UseMultiChannelTuning(midichannel) && global.multi_channel_esp_retuning[midichannel&15])
         {
-            freqs=global.multi_channel_esp_retuning[midichannel];
+            freqs=global.multi_channel_esp_retuning[midichannel&15];
             multiChannel=true;
         }
         int iLower,iUpper;iLower=0;iUpper=0;
