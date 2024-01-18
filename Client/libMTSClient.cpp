@@ -38,13 +38,13 @@ struct mtsclientglobal
         if (GetTuning) esp_retuning=GetTuning();
         for (int i=0;i<16;i++) multi_channel_esp_retuning[i]=GetMultiChannelTuning?GetMultiChannelTuning(static_cast<char>(i)):0;
     }
-    virtual inline bool isOnline() const {return esp_retuning && HasMaster && HasMaster();}
+    inline bool isOnline() const {return esp_retuning && HasMaster && HasMaster();}
     
     mts_void RegisterClient,DeregisterClient;mts_bool HasMaster;mts_bcc ShouldFilterNote,ShouldFilterNoteMultiChannel;mts_cd GetTuning;mts_cdc GetMultiChannelTuning;mts_bc UseMultiChannelTuning;mts_pcc GetScaleName; // Interface to lib
     double iet[128];const double *esp_retuning;const double *multi_channel_esp_retuning[16]; // tuning tables
     
 #ifdef MTS_ESP_WIN
-    virtual void load_lib()
+    void load_lib()
 	{
         SHGetKnownFolderPathFunc SHGetKnownFolderPath=0;
         CoTaskMemFreeFunc CoTaskMemFree=0;
@@ -80,10 +80,10 @@ struct mtsclientglobal
         UseMultiChannelTuning           =(mts_bc)   GetProcAddress(handle,"MTS_UseMultiChannelTuning");
         GetScaleName                    =(mts_pcc)  GetProcAddress(handle,"MTS_GetScaleName");
     }
-    virtual ~mtsclientglobal() {if (handle) FreeLibrary(handle);}
+    ~mtsclientglobal() {if (handle) FreeLibrary(handle);}
     HINSTANCE handle;
 #else
-    virtual void load_lib()
+    void load_lib()
     {
         if (!(handle=dlopen("/Library/Application Support/MTS-ESP/libMTS.dylib",RTLD_NOW)) &&
             !(handle=dlopen("/usr/local/lib/libMTS.so",RTLD_NOW))) return;
@@ -97,7 +97,7 @@ struct mtsclientglobal
         UseMultiChannelTuning           =(mts_bc)   dlsym(handle,"MTS_UseMultiChannelTuning");
         GetScaleName                    =(mts_pcc)  dlsym(handle,"MTS_GetScaleName");
     }
-    virtual ~mtsclientglobal() {if (handle) dlclose(handle);}
+    ~mtsclientglobal() {if (handle) dlclose(handle);}
     void *handle;
 #endif
 };
@@ -111,7 +111,7 @@ struct MTSClient
         for (int i=0;i<128;i++) retuning[i]=440.*pow(2.,(i-69.)/12.);
         if (global.RegisterClient) global.RegisterClient();
     }
-    virtual ~MTSClient() {if (global.DeregisterClient) global.DeregisterClient();}
+    ~MTSClient() {if (global.DeregisterClient) global.DeregisterClient();}
     bool hasMaster() {return global.isOnline();}
     inline double freq(char midinote,char midichannel)
     {
