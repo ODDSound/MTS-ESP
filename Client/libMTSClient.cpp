@@ -368,7 +368,7 @@ static char freqToNoteET(double freq)
     if (n==-1) {if (freq==freqs[mid]) n=mid;else return 60;}
     if (!n) n2=1;
     else if (n==127) n2=126;
-    else n2=n+1*(fabs(freqs[n-1]-freq)<fabs(freqs[n+1]-freq)?-1:1);
+    else n2=n+(fabs(freqs[n-1]-freq)<fabs(freqs[n+1]-freq)?-1:1);
     if (n2<n) {int t=n;n=n2;n2=t;}
     double fmid=freqs[n]*pow(2.,0.5*(log(freqs[n2]/freqs[n])/ln2));
     return freq<fmid?static_cast<char>(n):static_cast<char>(n2);
