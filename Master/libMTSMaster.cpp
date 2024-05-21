@@ -18,7 +18,7 @@ typedef void (WINAPI* CoTaskMemFreeFunc) (LPVOID);
 #include <dlfcn.h>
 #endif
 
-typedef void (*mts_void__void__pVoid)(void*);
+typedef void (*mts_void__pVoid)(void*);
 typedef void (*mts_void__void)(void);
 typedef bool (*mts_bool__void)(void);
 typedef int (*mts_int__void)(void);
@@ -58,8 +58,8 @@ struct mtsmasterglobal
     mts_void__pVoid RegisterMaster;
     mts_void__void DeregisterMaster;
     mts_void__void Reinitialize;
-    mts_void__void HasMaster
-    mts_void__void HasIPC;
+    mts_bool__void HasMaster;
+    mts_bool__void HasIPC;
     mts_int__void GetNumClients;
     mts_void__pConstDouble SetNoteTunings;
     mts_void__double_char SetNoteTuning;
@@ -119,8 +119,8 @@ struct mtsmasterglobal
         
         RegisterMaster              = (mts_void__pVoid)              GetProcAddress(handle, "MTS_RegisterMaster");
         DeregisterMaster            = (mts_void__void)               GetProcAddress(handle, "MTS_DeregisterMaster");
-        HasMaster                   = (mts_void__void)               GetProcAddress(handle, "MTS_HasMaster");
-        HasIPC                      = (mts_void__void)               GetProcAddress(handle, "MTS_HasIPC");
+        HasMaster                   = (mts_bool__void)               GetProcAddress(handle, "MTS_HasMaster");
+        HasIPC                      = (mts_bool__void)               GetProcAddress(handle, "MTS_HasIPC");
         Reinitialize                = (mts_void__void)               GetProcAddress(handle, "MTS_Reinitialize");
         GetNumClients               = (mts_int__void)                GetProcAddress(handle, "MTS_GetNumClients");
         SetNoteTunings              = (mts_void__pConstDouble)       GetProcAddress(handle, "MTS_SetNoteTunings");
@@ -153,8 +153,8 @@ struct mtsmasterglobal
         
         RegisterMaster              = (mts_void__pVoid)             dlsym(handle, "MTS_RegisterMaster");
         DeregisterMaster            = (mts_void__void)              dlsym(handle, "MTS_DeregisterMaster");
-        HasMaster                   = (mts_void__void)              dlsym(handle, "MTS_HasMaster");
-        HasIPC                      = (mts_void__void)              dlsym(handle, "MTS_HasIPC");
+        HasMaster                   = (mts_bool__void)              dlsym(handle, "MTS_HasMaster");
+        HasIPC                      = (mts_bool__void)              dlsym(handle, "MTS_HasIPC");
         Reinitialize                = (mts_void__void)              dlsym(handle, "MTS_Reinitialize");
         GetNumClients               = (mts_int__void)               dlsym(handle, "MTS_GetNumClients");
         SetNoteTunings              = (mts_void__pConstDouble)      dlsym(handle, "MTS_SetNoteTunings");
