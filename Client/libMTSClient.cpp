@@ -77,7 +77,7 @@ struct mtsclientglobal
     
 #ifdef MTS_ESP_WIN
     void load_lib()
-	{
+    {
         SHGetKnownFolderPathFunc SHGetKnownFolderPath = 0;
         CoTaskMemFreeFunc CoTaskMemFree = 0;
         
@@ -115,7 +115,7 @@ struct mtsclientglobal
                 return;
             }
         }
-        else 
+        else
         {
             return;
         }
@@ -191,21 +191,21 @@ struct MTSClient
     {
         for (int i = 0; i < 128; i++)
         {
-			localFreqs[i] = 440.0 * pow(2.0, (i - 69.0) / 12.0);
-			localTunings[i].flags = 0;
-			localTunings[i].freq = localFreqs[i];
-			globalTunings[i].flags = 0;
-			globalTunings[i].freq = localFreqs[i];
+            localFreqs[i] = 440.0 * pow(2.0, (i - 69.0) / 12.0);
+            localTunings[i].flags = 0;
+            localTunings[i].freq = localFreqs[i];
+            globalTunings[i].flags = 0;
+            globalTunings[i].freq = localFreqs[i];
         }
         
         for (int i = 0; i < 16; i++)
-		{
-			for (int j = 0; j < 128; j++)
-			{
-				globalMultichannelTunings[i][j].flags = 0;
-				globalMultichannelTunings[i][j].freq = localFreqs[i];
-			}
-		}
+        {
+            for (int j = 0; j < 128; j++)
+            {
+                globalMultichannelTunings[i][j].flags = 0;
+                globalMultichannelTunings[i][j].freq = localFreqs[i];
+            }
+        }
                 
         if (global.RegisterClient)
             global.RegisterClient();
@@ -217,7 +217,7 @@ struct MTSClient
             global.DeregisterClient();
     }
     
-	inline bool hasMaster() {return global.isOnline();}
+    inline bool hasMaster() {return global.isOnline();}
     
     inline double freq(char midinote, char midichannel)
     {
@@ -273,13 +273,13 @@ struct MTSClient
             global.UseMultiChannelTuning(midichannel) &&
             global.multi_channel_esp_retuning[channel])
         {
-			double freq = global.multi_channel_esp_retuning[channel][note];
+            double freq = global.multi_channel_esp_retuning[channel][note];
 			
             if (globalMultichannelTunings[channel][note].freq == freq &&
-				(globalMultichannelTunings[channel][note].flags & Tuning::eRatioValid))
-			{
-				return globalMultichannelTunings[channel][note].ratio;
-			}
+                (globalMultichannelTunings[channel][note].flags & Tuning::eRatioValid))
+            {
+                return globalMultichannelTunings[channel][note].ratio;
+            }
             
             globalMultichannelTunings[channel][note].freq = global.multi_channel_esp_retuning[channel][note];
             globalMultichannelTunings[channel][note].ratio = globalMultichannelTunings[channel][note].freq * global.iet[note];
@@ -287,13 +287,13 @@ struct MTSClient
             return globalMultichannelTunings[channel][note].ratio;
         }
         
-		double freq = global.esp_retuning[note];
+        double freq = global.esp_retuning[note];
 
-		if (globalTunings[note].freq == freq &&
-			(globalTunings[note].flags & Tuning::eRatioValid))
-		{
-			return globalTunings[note].ratio;
-		}
+        if (globalTunings[note].freq == freq &&
+            (globalTunings[note].flags & Tuning::eRatioValid))
+        {
+            return globalTunings[note].ratio;
+        }
         
         globalTunings[note].freq = global.esp_retuning[note];
         globalTunings[note].ratio = globalTunings[note].freq * global.iet[note];
@@ -336,9 +336,9 @@ struct MTSClient
             global.UseMultiChannelTuning(midichannel) &&
             global.multi_channel_esp_retuning[channel])
 		{
-			double freq = global.multi_channel_esp_retuning[channel][note];
+            double freq = global.multi_channel_esp_retuning[channel][note];
 			
-			if (globalMultichannelTunings[channel][note].freq == freq)
+            if (globalMultichannelTunings[channel][note].freq == freq)
             {
                 if (globalMultichannelTunings[channel][note].flags & Tuning::eSemitonesValid)
                     return globalMultichannelTunings[channel][note].semitones;
@@ -360,7 +360,7 @@ struct MTSClient
         
         double freq = global.esp_retuning[note];
 
-		if (globalTunings[note].freq == freq)
+        if (globalTunings[note].freq == freq)
         {
             if (globalTunings[note].flags & Tuning::eSemitonesValid)
                 return globalTunings[note].semitones;
@@ -791,8 +791,8 @@ struct MTSClient
     enum eSysexState {eIgnoring = 0, eMatchingSysex, eSysexValid, eMatchingMTS, eMatchingBank, eMatchingProg, eMatchingChannel, eTuningName, eNumTunings, eTuningData, eCheckSum};
     enum eMTSFormat {eRequest = 0, eBulk, eSingle, eScaleOctOneByte, eScaleOctTwoByte, eScaleOctOneByteExt, eScaleOctTwoByteExt};
 
-	double localFreqs[128];
-	Tuning localTunings[128];
+    double localFreqs[128];
+    Tuning localTunings[128];
     Tuning globalTunings[128];
     Tuning globalMultichannelTunings[16][128];
     

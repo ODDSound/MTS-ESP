@@ -33,7 +33,7 @@ typedef void (*mts_void__char)(char);
 
 struct mtsmasterglobal
 {
-	mtsmasterglobal() 
+    mtsmasterglobal()
     : RegisterMaster(0)
     , DeregisterMaster(0)
     , Reinitialize(0)
@@ -52,8 +52,8 @@ struct mtsmasterglobal
     , ClearNoteFilterMultiChannel(0)
     , handle(0)
     {
-		load_lib();
-	}
+        load_lib();
+    }
     
     mts_void__pVoid RegisterMaster;
     mts_void__void DeregisterMaster;
@@ -73,7 +73,7 @@ struct mtsmasterglobal
     mts_void__char ClearNoteFilterMultiChannel;
 	
 #ifdef MTS_ESP_WIN
-	void load_lib()
+    void load_lib()
     {
         SHGetKnownFolderPathFunc SHGetKnownFolderPath = 0;
         CoTaskMemFreeFunc CoTaskMemFree = 0;
@@ -135,15 +135,15 @@ struct mtsmasterglobal
         ClearNoteFilterMultiChannel = (mts_void__char)               GetProcAddress(handle, "MTS_ClearNoteFilterMultiChannel");
 	}
     
-	~mtsmasterglobal()
+    ~mtsmasterglobal()
     {
         if (handle)
             FreeLibrary(handle);
     }
     
-	HINSTANCE handle;
+    HINSTANCE handle;
 #else
-	void load_lib()
+    void load_lib()
     {
         if (!(handle = dlopen("/Library/Application Support/MTS-ESP/libMTS.dylib", RTLD_NOW)) &&
             !(handle = dlopen("/usr/local/lib/libMTS.so", RTLD_NOW)))
@@ -162,20 +162,20 @@ struct mtsmasterglobal
         SetScaleName                = (mts_void__pConstChar)        dlsym(handle, "MTS_SetScaleName");
         FilterNote                  = (mts_void__bool_char_char)    dlsym(handle, "MTS_FilterNote");
         ClearNoteFilter             = (mts_void__void)              dlsym(handle, "MTS_ClearNoteFilter");
-		SetMultiChannel             = (mts_void__bool_char)         dlsym(handle, "MTS_SetMultiChannel");
+        SetMultiChannel             = (mts_void__bool_char)         dlsym(handle, "MTS_SetMultiChannel");
         SetMultiChannelNoteTunings  = (mts_void__pConstDouble_char) dlsym(handle, "MTS_SetMultiChannelNoteTunings");
         SetMultiChannelNoteTuning   = (mts_void__double_char_char)  dlsym(handle, "MTS_SetMultiChannelNoteTuning");
         FilterNoteMultiChannel      = (mts_void__bool_char_char)    dlsym(handle, "MTS_FilterNoteMultiChannel");
         ClearNoteFilterMultiChannel = (mts_void__char)              dlsym(handle, "MTS_ClearNoteFilterMultiChannel");
 	}
     
-	~mtsmasterglobal() 
+    ~mtsmasterglobal()
     {
         if (handle)
             dlclose(handle);
     }
     
-	void *handle;
+    void *handle;
 #endif
 };
 
@@ -186,7 +186,7 @@ void MTS_DeregisterMaster()                                                     
 bool MTS_CanRegisterMaster()                                                        {return global.HasMaster ? !global.HasMaster() : true;}
 bool MTS_HasIPC()                                                                   {return global.HasIPC ? global.HasIPC() : false;}
 void MTS_Reinitialize()                                                             {if (global.Reinitialize) global.Reinitialize();}
-int  MTS_GetNumClients()				                                            {return global.GetNumClients ? global.GetNumClients() : 0;}
+int  MTS_GetNumClients()                                                            {return global.GetNumClients ? global.GetNumClients() : 0;}
 void MTS_SetNoteTunings(const double *freqs)                                        {if (global.SetNoteTunings) global.SetNoteTunings(freqs);}
 void MTS_SetNoteTuning(double freq, char midinote)                                  {if (global.SetNoteTuning) global.SetNoteTuning(freq, midinote);}
 void MTS_SetScaleName(const char *name)                                             {if (global.SetScaleName) global.SetScaleName(name);}
