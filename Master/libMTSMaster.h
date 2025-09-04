@@ -85,6 +85,16 @@ extern "C" {
      to a multi-channel one.
      
      
+     After registering, you may wish to let the user know if they have an older version of the libMTS dynamic library
+     installed which may not support some features in this version of the API:
+     
+        bool should_update = MTS_ShouldUpdateLibrary(client);
+     
+     The latest version of libMTS will always be backward compatible with masters built with
+     an older version of the API. Users can update libMTS using the installers at
+     https://github.com/ODDSound/MTS-ESP/tree/main/libMTS.
+     
+     
      IPC support:
      
      MTS_HasIPC() allows you to check if the process in which the plug-in is running is using IPC for sharing MTS-ESP
@@ -133,6 +143,9 @@ extern "C" {
     // plug-in is running crashes.
     extern void MTS_Reinitialize();
     
+    // Check if the MTS-ESP dynamic library needs to be updated to use all features in this version of the API.
+    extern bool MTS_ShouldUpdateLibrary();
+
     // Returns the number of connected clients.
     extern int MTS_GetNumClients();
 
@@ -142,6 +155,20 @@ extern "C" {
     
     // Set a scale name, so it can be displayed in clients or included in MTS sysex messages sent by a client.
     extern void MTS_SetScaleName(const char *name);
+
+    // Set the period ratio of the scale, e.g for a period of an octave supply 2.0.
+    extern void MTS_SetPeriodRatio(double periodRatio);
+
+    // Supply information about how a scale is mapped to the MIDI note range.
+    //  - Map size: the number of notes between each repetition of the scale pattern.
+    //  - Map start key: the note on which the map starts. This could technically be any key at which the scale pattern repeats but would typically be the one below but nearest to the ref key.
+    //  - Ref key: the note for which a frequency has been explicitly defined and from which the frequency of all other notes is established.
+    // Negative values are invalid. If you do not wish to supply this information, or it is not relevant for the current tuning, set -1 as the argument. 
+    // This will indicate to client plug-ins that they cannot use the queried values.
+    // Using these functions is optional and if you don't call them at all clients will receive values of -1 by default.
+    extern void MTS_SetMapSize(char size);
+    extern void MTS_SetMapStartKey(char key);
+    extern void MTS_SetRefKey(char key);
 
     // Instruct clients to filter midi notes e.g. because they are not mapped to any scale steps.
     // MIDI channel argument is optional, filtering will apply to all channels if not provided.

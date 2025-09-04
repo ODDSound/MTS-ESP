@@ -94,7 +94,9 @@ extern "C" {
         MTS_ParseMIDIDataU(client, buffer, len); // if buffer is unsigned char *
      
      These will update a local tuning table which is used when querying retuning as in steps 2
-     and 3.
+     and 3. Check whether a valid MTS SysEx message has been received with:
+     
+        bool MTS_SysEx_received = MTS_HasReceivedMTSSysEx(client);
      
      
      9. OPTIONAL: If you want to display to the user whether the plug-in is "connected" to an
@@ -110,7 +112,17 @@ extern "C" {
         const char *name = MTS_GetScaleName(client);
      
      
-     11: EXTRAS: Helper functions are available which return the MIDI note whose pitch is nearest
+     11: OPTIONAL: After registering, let the user know if they have an older version of the libMTS dynamic library
+     installed which may not support some features in this version of the API:
+     
+        bool should_update = MTS_ShouldUpdateLibrary(client);
+     
+     The latest version of libMTS will always be backward compatible with clients built with
+     an older version of the API. Users can update libMTS using the installers at
+     https://github.com/ODDSound/MTS-ESP/tree/main/libMTS.
+     
+     
+     12: EXTRAS: Helper functions are available which return the MIDI note whose pitch is nearest
      a given frequency. The MIDI note returned is guaranteed to be mapped. If you intend to
      generate a note-on message using the returned note number, you may already know which MIDI
      channel it will be sent on, in which case you must specify this in the call, else the client
@@ -121,12 +133,15 @@ extern "C" {
     // Opaque datatype for MTSClient.
     typedef struct MTSClient MTSClient;
 
-    // Register/deregister as a client. Call from the plugin constructor and destructor.
+    // Register/deregister as a client. Call from the plug-in constructor and destructor.
     extern MTSClient *MTS_RegisterClient();
     extern void MTS_DeregisterClient(MTSClient *client);
 
-    // Check if the client is currently connected to a master plugin.
+    // Check if the client is currently connected to a master plug-in.
     extern bool MTS_HasMaster(MTSClient *client);
+
+    // Check if the MTS-ESP dynamic library needs to be updated to use all features in this version of the API.
+    extern bool MTS_ShouldUpdateLibrary(MTSClient *client);
 
     // Returns true if note should not be played. MIDI channel argument should be included if possible (0-15), else set to -1.
     extern bool MTS_ShouldFilterNote(MTSClient *client, char midinote, char midichannel);
@@ -149,9 +164,23 @@ extern "C" {
     // Returns the name of the current scale.
     extern const char *MTS_GetScaleName(MTSClient *client);
 
-    // Parse incoming MIDI data to update local retuning. All formats of MTS sysex message accepted.
+    // Returns the period of the current scale, or 2.0 (12 semitones) if not supplied by a master.
+    extern double MTS_GetPeriodRatio(MTSClient *client);
+    extern double MTS_GetPeriodSemitones(MTSClient *client);
+
+    // Query information about keyboard mapping.
+    // NOTE: negative values are invalid and these functions will return -1 if the information has not been supplied by a master.
+    // The return value must therefore be checked it is valid before being used.
+    extern char MTS_GetMapSize(MTSClient *client);
+    extern char MTS_GetMapStartKey(MTSClient *client);
+    extern char MTS_GetRefKey(MTSClient *client);
+
+    // Parse incoming MIDI data to update local tuning. All formats of MTS SysEx message accepted.
     extern void MTS_ParseMIDIDataU(MTSClient *client, const unsigned char *buffer, int len);
     extern void MTS_ParseMIDIData(MTSClient *client, const char *buffer, int len);
+
+    // Check if the client has received any valid MTS SysEx messages and will use local tuning if not connected to a master plug-in.
+    extern bool MTS_HasReceivedMTSSysEx(MTSClient *client);
 
 #ifdef __cplusplus
 }

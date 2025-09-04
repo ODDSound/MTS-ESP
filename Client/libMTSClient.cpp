@@ -19,16 +19,21 @@ typedef void (WINAPI* CoTaskMemFreeFunc) (LPVOID);
 #include <dlfcn.h>
 #endif
 
+const static int libMTSVersion = 0x00010003;
+
 const static double ln2 = 0.693147180559945309417;
 const static double ratioToSemitones = 17.31234049066756088832; // 12.0 / log(2.0)
 
 typedef void (*mts_void__void)(void);
 typedef bool (*mts_bool__void)(void);
+typedef int (*mts_int__void)(void);
 typedef bool (*mts_bool__char_char)(char, char);
 typedef const double *(*mts_pConstDouble__void)(void);
 typedef const double *(*mts_pConstDouble__char)(char);
 typedef bool (*mts_bool__char)(char);
 typedef const char *(*mts_pConstChar__void)(void);
+typedef double (*mts_double__void)(void);
+typedef char (*mts_char__void)(void);
 
 struct mtsclientglobal
 {
@@ -36,12 +41,17 @@ struct mtsclientglobal
     : RegisterClient(0)
     , DeregisterClient(0)
     , HasMaster(0)
+    , GetVersionNumber(0)
     , ShouldFilterNote(0)
     , ShouldFilterNoteMultiChannel(0)
     , GetTuning(0)
     , GetMultiChannelTuning(0)
     , UseMultiChannelTuning(0)
     , GetScaleName(0)
+    , GetPeriodRatio(0)
+    , GetMapSize(0)
+    , GetMapStartKey(0)
+    , GetRefKey(0)
     , esp_retuning(0)
     , handle(0)
     {
@@ -63,12 +73,17 @@ struct mtsclientglobal
     mts_void__void RegisterClient;
     mts_void__void DeregisterClient;
     mts_bool__void HasMaster;
+    mts_int__void GetVersionNumber;
     mts_bool__char_char ShouldFilterNote;
     mts_bool__char_char ShouldFilterNoteMultiChannel;
     mts_pConstDouble__void GetTuning;
     mts_pConstDouble__char GetMultiChannelTuning;
     mts_bool__char UseMultiChannelTuning;
     mts_pConstChar__void GetScaleName;
+    mts_double__void GetPeriodRatio;
+    mts_char__void GetMapSize;
+    mts_char__void GetMapStartKey;
+    mts_char__void GetRefKey;
     
     // tuning tables
     double iet[128];
@@ -123,12 +138,17 @@ struct mtsclientglobal
         RegisterClient                  = (mts_void__void)          GetProcAddress(handle, "MTS_RegisterClient");
         DeregisterClient                = (mts_void__void)          GetProcAddress(handle, "MTS_DeregisterClient");
         HasMaster                       = (mts_bool__void)          GetProcAddress(handle, "MTS_HasMaster");
+        GetVersionNumber                = (mts_int__void)           GetProcAddress(handle, "MTS_GetVersionNumber");
         ShouldFilterNote                = (mts_bool__char_char)     GetProcAddress(handle, "MTS_ShouldFilterNote");
         ShouldFilterNoteMultiChannel    = (mts_bool__char_char)     GetProcAddress(handle, "MTS_ShouldFilterNoteMultiChannel");
         GetTuning                       = (mts_pConstDouble__void)  GetProcAddress(handle, "MTS_GetTuningTable");
         GetMultiChannelTuning           = (mts_pConstDouble__char)  GetProcAddress(handle, "MTS_GetMultiChannelTuningTable");
         UseMultiChannelTuning           = (mts_bool__char)          GetProcAddress(handle, "MTS_UseMultiChannelTuning");
         GetScaleName                    = (mts_pConstChar__void)    GetProcAddress(handle, "MTS_GetScaleName");
+        GetPeriodRatio                  = (mts_double__void)        GetProcAddress(handle, "MTS_GetPeriodRatio");
+        GetMapSize                      = (mts_char__void)          GetProcAddress(handle, "MTS_GetMapSize");
+        GetMapStartKey                  = (mts_char__void)          GetProcAddress(handle, "MTS_GetMapStartKey");
+        GetRefKey                       = (mts_char__void)          GetProcAddress(handle, "MTS_GetRefKey");
     }
     
     ~mtsclientglobal() 
@@ -150,12 +170,17 @@ struct mtsclientglobal
         RegisterClient                  = (mts_void__void)          dlsym(handle, "MTS_RegisterClient");
         DeregisterClient                = (mts_void__void)          dlsym(handle, "MTS_DeregisterClient");
         HasMaster                       = (mts_bool__void)          dlsym(handle, "MTS_HasMaster");
+        GetVersionNumber                = (mts_int__void)           dlsym(handle, "MTS_GetVersionNumber");
         ShouldFilterNote                = (mts_bool__char_char)     dlsym(handle, "MTS_ShouldFilterNote");
         ShouldFilterNoteMultiChannel    = (mts_bool__char_char)     dlsym(handle, "MTS_ShouldFilterNoteMultiChannel");
         GetTuning                       = (mts_pConstDouble__void)  dlsym(handle, "MTS_GetTuningTable");
         GetMultiChannelTuning           = (mts_pConstDouble__char)  dlsym(handle, "MTS_GetMultiChannelTuningTable");
         UseMultiChannelTuning           = (mts_bool__char)          dlsym(handle, "MTS_UseMultiChannelTuning");
         GetScaleName                    = (mts_pConstChar__void)    dlsym(handle, "MTS_GetScaleName");
+        GetPeriodRatio                  = (mts_double__void)        dlsym(handle, "MTS_GetPeriodRatio");
+        GetMapSize                      = (mts_char__void)          dlsym(handle, "MTS_GetMapSize");
+        GetMapStartKey                  = (mts_char__void)          dlsym(handle, "MTS_GetMapStartKey");
+        GetRefKey                       = (mts_char__void)          dlsym(handle, "MTS_GetRefKey");
     }
     
     ~mtsclientglobal()
@@ -183,11 +208,15 @@ struct MTSClient
     
     MTSClient()
     : tuningName("12-TET")
+    , periodRatioLocal(2.0)
+    , periodSemitones(12.0)
+    , mapSizeLocal(static_cast<char>(-1))
+    , mapStartKeyLocal(static_cast<char>(-1))
     , supportsNoteFiltering(false)
     , supportsMultiChannelNoteFiltering(false)
     , supportsMultiChannelTuning(false)
     , freqRequestReceived(false)
-    , supportsMTSSysex(false)
+    , receivedMTSSysEx(false)
     {
         for (int i = 0; i < 128; i++)
         {
@@ -218,6 +247,7 @@ struct MTSClient
     }
     
     inline bool hasMaster() {return global.isOnline();}
+    inline bool shouldUpdateLibrary() {return global.GetVersionNumber ? (global.GetVersionNumber() < libMTSVersion) : false;}
     
     inline double freq(char midinote, char midichannel)
     {
@@ -256,7 +286,7 @@ struct MTSClient
         
         if (!global.isOnline())
         {
-            if (!supportsMTSSysex)
+            if (!receivedMTSSysEx)
                 return 1.0;
             
             if (localTunings[note].flags & Tuning::eRatioValid)
@@ -311,7 +341,7 @@ struct MTSClient
         
         if (!global.isOnline())
         {
-            if (!supportsMTSSysex)
+            if (!receivedMTSSysEx)
                 return 0.0;
             
             if (localTunings[note].flags & Tuning::eSemitonesValid)
@@ -562,7 +592,6 @@ struct MTSClient
     
     inline void parseMIDIData(const unsigned char *buffer, int len)
     {
-        supportsMTSSysex = true;
         int sysex_ctr = 0;
         int sysex_value = 0;
         int note = 0;
@@ -772,12 +801,24 @@ struct MTSClient
                     break;
             }
         }
+        
+        if (format == eScaleOctOneByte || format == eScaleOctTwoByte || format == eScaleOctOneByteExt || format == eScaleOctTwoByteExt)
+        {
+            mapSizeLocal = static_cast<char>(12);
+            mapStartKeyLocal = static_cast<char>(60);
+        }
+        else
+        {
+            mapSizeLocal = static_cast<char>(-1);
+            mapStartKeyLocal = static_cast<char>(-1);
+        }
     }
     
     inline void updateTuning(int note, int retuneNote, double detune)
     {
         if (note < 0 || note > 127 || retuneNote < 0 || retuneNote > 127)
             return;
+        receivedMTSSysEx = true;
         localFreqs[note] = 440.0 * pow(2.0, ((retuneNote + detune) - 69.0) / 12.0);
         if (localFreqs[note] != localTunings[note].freq)
         {
@@ -786,7 +827,25 @@ struct MTSClient
         }
     }
     
+    inline bool hasReceivedMTSSysEx() {return receivedMTSSysEx;}
+    
     const char *getScaleName() {return (global.isOnline() && global.GetScaleName) ? global.GetScaleName() : tuningName;}
+    
+    double getPeriodRatio() {return (global.isOnline() && global.GetPeriodRatio) ? global.GetPeriodRatio() : 2.0;}
+    double getPeriodSemitones()
+    {
+        double periodRatio = getPeriodRatio();
+        if (periodRatio != periodRatioLocal)
+        {
+            periodSemitones = ratioToSemitones * log(periodRatio);
+            periodRatioLocal = periodRatio;
+        }
+        return periodSemitones;
+    }
+    
+    char getMapSize() {return (global.isOnline() && global.GetMapSize) ? global.GetMapSize() : mapSizeLocal;}
+    char getMapStartKey() {return (global.isOnline() && global.GetMapStartKey) ? global.GetMapStartKey() : mapStartKeyLocal;}
+    char getRefKey() {return (global.isOnline() && global.GetRefKey) ? global.GetRefKey() : static_cast<char>(-1);}
     
     enum eSysexState {eIgnoring = 0, eMatchingSysex, eSysexValid, eMatchingMTS, eMatchingBank, eMatchingProg, eMatchingChannel, eTuningName, eNumTunings, eTuningData, eCheckSum};
     enum eMTSFormat {eRequest = 0, eBulk, eSingle, eScaleOctOneByte, eScaleOctTwoByte, eScaleOctOneByteExt, eScaleOctTwoByteExt};
@@ -798,11 +857,17 @@ struct MTSClient
     
     char tuningName[17];
     
+    double periodRatioLocal;
+    double periodSemitones;
+    
+    char mapSizeLocal;
+    char mapStartKeyLocal;
+    
     bool supportsNoteFiltering;
     bool supportsMultiChannelNoteFiltering;
     bool supportsMultiChannelTuning;
     bool freqRequestReceived;
-    bool supportsMTSSysex;
+    bool receivedMTSSysEx;
 };
 
 static char freqToNoteET(double freq)
@@ -875,6 +940,7 @@ static char freqToNoteET(double freq)
 MTSClient* MTS_RegisterClient()                                                     {return new MTSClient;}
 void MTS_DeregisterClient(MTSClient *c)                                             {delete c;}
 bool MTS_HasMaster(MTSClient *c)                                                    {return c ? c->hasMaster() : false;}
+bool MTS_ShouldUpdateLibrary(MTSClient *c)                                          {return c ? c->shouldUpdateLibrary() : false;}
 bool MTS_ShouldFilterNote(MTSClient *c, char midinote, char midichannel)            {return c ? c->shouldFilterNote(midinote & 127, midichannel) : false;}
 double MTS_NoteToFrequency(MTSClient *c, char midinote, char midichannel)           {return c ? c->freq(midinote, midichannel) : (1.0 / global.iet[midinote & 127]);}
 double MTS_RetuningAsRatio(MTSClient *c, char midinote, char midichannel)           {return c ? c->ratio(midinote, midichannel) : 1.0;}
@@ -882,5 +948,11 @@ double MTS_RetuningInSemitones(MTSClient *c, char midinote, char midichannel)   
 char MTS_FrequencyToNote(MTSClient *c, double freq, char midichannel)               {return c ? c->freqToNote(freq, midichannel) : freqToNoteET(freq);}
 char MTS_FrequencyToNoteAndChannel(MTSClient *c, double freq, char *midichannel)    {if (c) return c->freqToNote(freq, midichannel); if (midichannel) *midichannel = 0; return freqToNoteET(freq);}
 const char *MTS_GetScaleName(MTSClient *c)                                          {return c ? c->getScaleName() : "";}
+double MTS_GetPeriodRatio(MTSClient *c)                                             {return c ? c->getPeriodRatio() : 2.0;}
+double MTS_GetPeriodSemitones(MTSClient *c)                                         {return c ? c->getPeriodSemitones() : 12.0;}
+char MTS_GetMapSize(MTSClient *c)                                                   {return c ? c->getMapSize() : static_cast<char>(-1);}
+char MTS_GetMapStartKey(MTSClient *c)                                               {return c ? c->getMapStartKey() : static_cast<char>(-1);}
+char MTS_GetRefKey(MTSClient *c)                                                    {return c ? c->getRefKey() : static_cast<char>(-1);}
 void MTS_ParseMIDIDataU(MTSClient *c, const unsigned char *buffer, int len)         {if (c) c->parseMIDIData(buffer, len);}
 void MTS_ParseMIDIData(MTSClient *c, const char *buffer, int len)                   {if (c) c->parseMIDIData(reinterpret_cast<const unsigned char*>(buffer), len);}
+bool MTS_HasReceivedMTSSysEx(MTSClient *c)                                          {return c ? c->hasReceivedMTSSysEx() : false;}
