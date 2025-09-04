@@ -258,7 +258,7 @@ struct MTSClient
         {
             if (!supportsMTSSysex)
                 return 1.0;
-
+            
             if (localTunings[note].flags & Tuning::eRatioValid)
                 return localTunings[note].ratio;
             
@@ -274,7 +274,7 @@ struct MTSClient
             global.multi_channel_esp_retuning[channel])
         {
             double freq = global.multi_channel_esp_retuning[channel][note];
-			
+            
             if (globalMultichannelTunings[channel][note].freq == freq &&
                 (globalMultichannelTunings[channel][note].flags & Tuning::eRatioValid))
             {
@@ -288,7 +288,7 @@ struct MTSClient
         }
         
         double freq = global.esp_retuning[note];
-
+        
         if (globalTunings[note].freq == freq &&
             (globalTunings[note].flags & Tuning::eRatioValid))
         {
@@ -335,9 +335,9 @@ struct MTSClient
             global.UseMultiChannelTuning &&
             global.UseMultiChannelTuning(midichannel) &&
             global.multi_channel_esp_retuning[channel])
-		{
+        {
             double freq = global.multi_channel_esp_retuning[channel][note];
-			
+            
             if (globalMultichannelTunings[channel][note].freq == freq)
             {
                 if (globalMultichannelTunings[channel][note].flags & Tuning::eSemitonesValid)
@@ -359,7 +359,7 @@ struct MTSClient
         }
         
         double freq = global.esp_retuning[note];
-
+        
         if (globalTunings[note].freq == freq)
         {
             if (globalTunings[note].flags & Tuning::eSemitonesValid)
@@ -507,7 +507,7 @@ struct MTSClient
                     }
                     
                     double d = global.multi_channel_esp_retuning[channel][note] - freq;
-
+                    
                     if (d == 0.0)
                     {
                         *midichannel = static_cast<char>(channel);

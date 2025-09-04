@@ -71,7 +71,7 @@ struct mtsmasterglobal
     mts_void__double_char_char SetMultiChannelNoteTuning;
     mts_void__bool_char_char FilterNoteMultiChannel;
     mts_void__char ClearNoteFilterMultiChannel;
-	
+    
 #ifdef MTS_ESP_WIN
     void load_lib()
     {
@@ -167,7 +167,7 @@ struct mtsmasterglobal
         SetMultiChannelNoteTuning   = (mts_void__double_char_char)  dlsym(handle, "MTS_SetMultiChannelNoteTuning");
         FilterNoteMultiChannel      = (mts_void__bool_char_char)    dlsym(handle, "MTS_FilterNoteMultiChannel");
         ClearNoteFilterMultiChannel = (mts_void__char)              dlsym(handle, "MTS_ClearNoteFilterMultiChannel");
-	}
+    }
     
     ~mtsmasterglobal()
     {
