@@ -940,7 +940,7 @@ static char freqToNoteET(double freq)
 MTSClient* MTS_RegisterClient()                                                     {return new MTSClient;}
 void MTS_DeregisterClient(MTSClient *c)                                             {delete c;}
 bool MTS_HasMaster(MTSClient *c)                                                    {return c ? c->hasMaster() : false;}
-bool MTS_ShouldUpdateLibrary(MTSClient *c)                                          {return c ? c->shouldUpdateLibrary() : false;}
+bool MTS_Client_ShouldUpdateLibrary(MTSClient *c)                                   {return c ? c->shouldUpdateLibrary() : false;}
 bool MTS_ShouldFilterNote(MTSClient *c, char midinote, char midichannel)            {return c ? c->shouldFilterNote(midinote & 127, midichannel) : false;}
 double MTS_NoteToFrequency(MTSClient *c, char midinote, char midichannel)           {return c ? c->freq(midinote, midichannel) : (1.0 / global.iet[midinote & 127]);}
 double MTS_RetuningAsRatio(MTSClient *c, char midinote, char midichannel)           {return c ? c->ratio(midinote, midichannel) : 1.0;}

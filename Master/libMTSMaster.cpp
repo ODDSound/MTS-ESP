@@ -209,7 +209,7 @@ void MTS_DeregisterMaster()                                                     
 bool MTS_CanRegisterMaster()                                                        {return global.HasMaster ? !global.HasMaster() : true;}
 bool MTS_HasIPC()                                                                   {return global.HasIPC ? global.HasIPC() : false;}
 void MTS_Reinitialize()                                                             {if (global.Reinitialize) global.Reinitialize();}
-bool MTS_ShouldUpdateLibrary()                                                      {return global.GetVersionNumber ? (global.GetVersionNumber() < libMTSVersion) : false;}
+bool MTS_Master_ShouldUpdateLibrary()                                               {return global.GetVersionNumber ? (global.GetVersionNumber() < libMTSVersion) : false;}
 int  MTS_GetNumClients()                                                            {return global.GetNumClients ? global.GetNumClients() : 0;}
 void MTS_SetNoteTunings(const double *freqs)                                        {if (global.SetNoteTunings) global.SetNoteTunings(freqs);}
 void MTS_SetNoteTuning(double freq, char midinote)                                  {if (global.SetNoteTuning) global.SetNoteTuning(freq, midinote);}

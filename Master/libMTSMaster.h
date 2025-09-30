@@ -88,7 +88,7 @@ extern "C" {
      After registering, you may wish to let the user know if they have an older version of the libMTS dynamic library
      installed which may not support some features in this version of the API:
      
-        bool should_update = MTS_ShouldUpdateLibrary(client);
+        bool should_update = MTS_Master_ShouldUpdateLibrary();
      
      The latest version of libMTS will always be backward compatible with masters built with
      an older version of the API. Users can update libMTS using the installers at
@@ -144,7 +144,7 @@ extern "C" {
     extern void MTS_Reinitialize();
     
     // Check if the MTS-ESP dynamic library needs to be updated to use all features in this version of the API.
-    extern bool MTS_ShouldUpdateLibrary();
+    extern bool MTS_Master_ShouldUpdateLibrary();
 
     // Returns the number of connected clients.
     extern int MTS_GetNumClients();

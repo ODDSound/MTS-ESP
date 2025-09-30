@@ -115,7 +115,7 @@ extern "C" {
      11: OPTIONAL: After registering, let the user know if they have an older version of the libMTS dynamic library
      installed which may not support some features in this version of the API:
      
-        bool should_update = MTS_ShouldUpdateLibrary(client);
+        bool should_update = MTS_Client_ShouldUpdateLibrary(client);
      
      The latest version of libMTS will always be backward compatible with clients built with
      an older version of the API. Users can update libMTS using the installers at
@@ -141,7 +141,7 @@ extern "C" {
     extern bool MTS_HasMaster(MTSClient *client);
 
     // Check if the MTS-ESP dynamic library needs to be updated to use all features in this version of the API.
-    extern bool MTS_ShouldUpdateLibrary(MTSClient *client);
+    extern bool MTS_Client_ShouldUpdateLibrary(MTSClient *client);
 
     // Returns true if note should not be played. MIDI channel argument should be included if possible (0-15), else set to -1.
     extern bool MTS_ShouldFilterNote(MTSClient *client, char midinote, char midichannel);
