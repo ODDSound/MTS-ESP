@@ -872,68 +872,18 @@ struct MTSClient
 
 static char freqToNoteET(double freq)
 {
-    static double freqs[128];
-    static bool init = false;
-    if (!init)
-    {
-        for (int i = 0; i < 128; i++)
-            freqs[i] = 440.0 * pow(2.0, (i - 69.0) / 12.0);
-        init = true;
-    }
+    if (isnan(freq))
+        return static_cast<char>(60);
     
-    if (freq <= freqs[0])
-        return 0;
-    if (freq >= freqs[127])
-        return 127;
-    
-    int mid = 0;
-    int n = -1;
-    int n2 = -1;
-    
-    for (int first = 0, last=127;
-         freq != freqs[(mid = first + (last - first) / 2)];
-         (freq < freqs[mid]) ? last = mid - 1 : first = mid + 1)
-    {
-        if (first > last)
-        {
-            if (!mid) 
-            {
-                n = mid;
-                break;
-            }
-            
-            if (mid > 127)
-                mid = 127;
-            
-            n = mid - ((freq - freqs[mid - 1]) < (freqs[mid] - freq));
-            break;
-        }
-    }
-    
-    if (n == -1)
-    {
-        if (freq == freqs[mid])
-            n = mid;
-        else
-            return 60;
-    }
-    
-    if (!n) 
-        n2 = 1;
-    else if (n == 127)
-        n2 = 126;
-    else
-        n2 = n + (fabs(freqs[n - 1] - freq) < fabs(freqs[n + 1] - freq) ? -1 : 1);
-    
-    if (n2 < n)
-    {
-        int t = n;
-        n = n2;
-        n2 = t;
-    }
-    
-    double fmid = freqs[n] * pow(2.0, 0.5 * (log(freqs[n2] / freqs[n]) / ln2));
-    return freq < fmid ? static_cast<char>(n) : static_cast<char>(n2);
+    // filter out frequencies that are almost exactly at MIDI boundaries
+    if (freq < 8.3) // corresponds to 0 < n < 0.5
+        return static_cast<char>(0);
+    if (freq > 12400.0) // corresponds to 126.5 < n < 127
+        return static_cast<char>(127);
+
+    static const double INV_440 = 1.0 / 440.0;
+    long n = 69 + lround(12.0 * log2(freq * INV_440));
+    return static_cast<char>(n);
 }
 
 // exported functions:
