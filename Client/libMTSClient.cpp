@@ -210,8 +210,8 @@ struct MTSClient
     : tuningName("12-TET")
     , periodRatioLocal(2.0)
     , periodSemitones(12.0)
-    , mapSizeLocal(static_cast<char>(-1))
-    , mapStartKeyLocal(static_cast<char>(-1))
+    , mapSizeLocal(static_cast<signed char>(-1))
+    , mapStartKeyLocal(static_cast<signed char>(-1))
     , supportsNoteFiltering(false)
     , supportsMultiChannelNoteFiltering(false)
     , supportsMultiChannelTuning(false)
@@ -804,13 +804,13 @@ struct MTSClient
         
         if (format == eScaleOctOneByte || format == eScaleOctTwoByte || format == eScaleOctOneByteExt || format == eScaleOctTwoByteExt)
         {
-            mapSizeLocal = static_cast<char>(12);
-            mapStartKeyLocal = static_cast<char>(60);
+            mapSizeLocal = static_cast<signed char>(12);
+            mapStartKeyLocal = static_cast<signed char>(60);
         }
         else
         {
-            mapSizeLocal = static_cast<char>(-1);
-            mapStartKeyLocal = static_cast<char>(-1);
+            mapSizeLocal = static_cast<signed char>(-1);
+            mapStartKeyLocal = static_cast<signed char>(-1);
         }
     }
     
@@ -843,9 +843,9 @@ struct MTSClient
         return periodSemitones;
     }
     
-    char getMapSize() {return (global.isOnline() && global.GetMapSize) ? global.GetMapSize() : mapSizeLocal;}
-    char getMapStartKey() {return (global.isOnline() && global.GetMapStartKey) ? global.GetMapStartKey() : mapStartKeyLocal;}
-    char getRefKey() {return (global.isOnline() && global.GetRefKey) ? global.GetRefKey() : static_cast<char>(-1);}
+    signed char getMapSize() {return (global.isOnline() && global.GetMapSize) ? global.GetMapSize() : mapSizeLocal;}
+    signed char getMapStartKey() {return (global.isOnline() && global.GetMapStartKey) ? global.GetMapStartKey() : mapStartKeyLocal;}
+    signed char getRefKey() {return (global.isOnline() && global.GetRefKey) ? global.GetRefKey() : static_cast<signed char>(-1);}
     
     enum eSysexState {eIgnoring = 0, eMatchingSysex, eSysexValid, eMatchingMTS, eMatchingBank, eMatchingProg, eMatchingChannel, eTuningName, eNumTunings, eTuningData, eCheckSum};
     enum eMTSFormat {eRequest = 0, eBulk, eSingle, eScaleOctOneByte, eScaleOctTwoByte, eScaleOctOneByteExt, eScaleOctTwoByteExt};
@@ -900,9 +900,9 @@ char MTS_FrequencyToNoteAndChannel(MTSClient *c, double freq, char *midichannel)
 const char *MTS_GetScaleName(MTSClient *c)                                          {return c ? c->getScaleName() : "";}
 double MTS_GetPeriodRatio(MTSClient *c)                                             {return c ? c->getPeriodRatio() : 2.0;}
 double MTS_GetPeriodSemitones(MTSClient *c)                                         {return c ? c->getPeriodSemitones() : 12.0;}
-char MTS_GetMapSize(MTSClient *c)                                                   {return c ? c->getMapSize() : static_cast<char>(-1);}
-char MTS_GetMapStartKey(MTSClient *c)                                               {return c ? c->getMapStartKey() : static_cast<char>(-1);}
-char MTS_GetRefKey(MTSClient *c)                                                    {return c ? c->getRefKey() : static_cast<char>(-1);}
+signed char MTS_GetMapSize(MTSClient *c)                                            {return c ? c->getMapSize() : static_cast<signed char>(-1);}
+signed char MTS_GetMapStartKey(MTSClient *c)                                        {return c ? c->getMapStartKey() : static_cast<signed char>(-1);}
+signed char MTS_GetRefKey(MTSClient *c)                                             {return c ? c->getRefKey() : static_cast<signed char>(-1);}
 void MTS_ParseMIDIDataU(MTSClient *c, const unsigned char *buffer, int len)         {if (c) c->parseMIDIData(buffer, len);}
 void MTS_ParseMIDIData(MTSClient *c, const char *buffer, int len)                   {if (c) c->parseMIDIData(reinterpret_cast<const unsigned char*>(buffer), len);}
 bool MTS_HasReceivedMTSSysEx(MTSClient *c)                                          {return c ? c->hasReceivedMTSSysEx() : false;}
