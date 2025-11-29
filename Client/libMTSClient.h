@@ -171,9 +171,9 @@ extern "C" {
     // Query information about keyboard mapping.
     // NOTE: negative values are invalid and these functions will return -1 if the information has not been supplied by a master.
     // The return value must therefore be checked it is valid before being used.
-    extern char MTS_GetMapSize(MTSClient *client);
-    extern char MTS_GetMapStartKey(MTSClient *client);
-    extern char MTS_GetRefKey(MTSClient *client);
+    extern signed char MTS_GetMapSize(MTSClient *client);
+    extern signed char MTS_GetMapStartKey(MTSClient *client);
+    extern signed char MTS_GetRefKey(MTSClient *client);
 
     // Parse incoming MIDI data to update local tuning. All formats of MTS SysEx message accepted.
     extern void MTS_ParseMIDIDataU(MTSClient *client, const unsigned char *buffer, int len);

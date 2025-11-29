@@ -70,4 +70,4 @@ If the file is not found, IPC support will be enabled by default.  It is importa
 
 For any queries, assistance or bug reports contact tech@oddsound.com.
 
-An MTS-ESP python wrapper for Linux can be found at [mtespy](https://github.com/narenratan/mtsespy), with thanks to [narenratan](https://github.com/narenratan).
+An MTS-ESP python wrapper for Linux can be found at [mtsespy](https://github.com/narenratan/mtsespy), with thanks to [narenratan](https://github.com/narenratan).
