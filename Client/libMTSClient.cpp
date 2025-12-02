@@ -860,8 +860,8 @@ struct MTSClient
     double periodRatioLocal;
     double periodSemitones;
     
-    char mapSizeLocal;
-    char mapStartKeyLocal;
+    signed char mapSizeLocal;
+    signed char mapStartKeyLocal;
     
     bool supportsNoteFiltering;
     bool supportsMultiChannelNoteFiltering;
