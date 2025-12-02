@@ -559,7 +559,7 @@ struct MTSClient
                     }
                 }
                 
-                if (dLower==0.0) 
+                if (dLower == 0.0)
                 {
                     *midichannel = static_cast<signed char>(channelsInUse[iUpper >> 7]);
                     return static_cast<char>(iUpper & 127);
