@@ -27,11 +27,11 @@ typedef int (*mts_int__void)(void);
 typedef void (*mts_void__pConstDouble)(const double*);
 typedef void (*mts_void__double_char)(double, char);
 typedef void (*mts_void__pConstChar)(const char*);
-typedef void (*mts_void__bool_char_char)(bool, char, char);
-typedef void (*mts_void__bool_char)(bool, char);
-typedef void (*mts_void__pConstDouble_char)(const double*, char);
-typedef void (*mts_void__double_char_char)(double, char, char);
-typedef void (*mts_void__char)(char);
+typedef void (*mts_void__bool_char_schar)(bool, char, signed char);
+typedef void (*mts_void__bool_schar)(bool, signed char);
+typedef void (*mts_void__pConstDouble_schar)(const double*, signed char);
+typedef void (*mts_void__double_char_schar)(double, char, signed char);
+typedef void (*mts_void__schar)(signed char);
 typedef void (*mts_void__double)(double);
 
 struct mtsmasterglobal
@@ -74,16 +74,16 @@ struct mtsmasterglobal
     mts_void__double_char SetNoteTuning;
     mts_void__pConstChar SetScaleName;
     mts_void__double SetPeriodRatio;
-    mts_void__char SetMapSize;
-    mts_void__char SetMapStartKey;
-    mts_void__char SetRefKey;
-    mts_void__bool_char_char FilterNote;
+    mts_void__schar SetMapSize;
+    mts_void__schar SetMapStartKey;
+    mts_void__schar SetRefKey;
+    mts_void__bool_char_schar FilterNote;
     mts_void__void ClearNoteFilter;
-    mts_void__bool_char SetMultiChannel;
-    mts_void__pConstDouble_char SetMultiChannelNoteTunings;
-    mts_void__double_char_char SetMultiChannelNoteTuning;
-    mts_void__bool_char_char FilterNoteMultiChannel;
-    mts_void__char ClearNoteFilterMultiChannel;
+    mts_void__bool_schar SetMultiChannel;
+    mts_void__pConstDouble_schar SetMultiChannelNoteTunings;
+    mts_void__double_char_schar SetMultiChannelNoteTuning;
+    mts_void__bool_char_schar FilterNoteMultiChannel;
+    mts_void__schar ClearNoteFilterMultiChannel;
     
 #ifdef MTS_ESP_WIN
     void load_lib()
@@ -130,27 +130,27 @@ struct mtsmasterglobal
             return;
         }
         
-        RegisterMaster              = (mts_void__pVoid)             GetProcAddress(handle, "MTS_RegisterMaster");
-        DeregisterMaster            = (mts_void__void)              GetProcAddress(handle, "MTS_DeregisterMaster");
-        Reinitialize                = (mts_void__void)              GetProcAddress(handle, "MTS_Reinitialize");
-        HasMaster                   = (mts_bool__void)              GetProcAddress(handle, "MTS_HasMaster");
-        HasIPC                      = (mts_bool__void)              GetProcAddress(handle, "MTS_HasIPC");
-        GetVersionNumber            = (mts_int__void)               GetProcAddress(handle, "MTS_GetVersionNumber");
-        GetNumClients               = (mts_int__void)               GetProcAddress(handle, "MTS_GetNumClients");
-        SetNoteTunings              = (mts_void__pConstDouble)      GetProcAddress(handle, "MTS_SetNoteTunings");
-        SetNoteTuning               = (mts_void__double_char)       GetProcAddress(handle, "MTS_SetNoteTuning");
-        SetScaleName                = (mts_void__pConstChar)        GetProcAddress(handle, "MTS_SetScaleName");
-        SetPeriodRatio              = (mts_void__double)            GetProcAddress(handle, "MTS_SetPeriodRatio");
-        SetMapSize                  = (mts_void__char)              GetProcAddress(handle, "MTS_SetMapSize");
-        SetMapStartKey              = (mts_void__char)              GetProcAddress(handle, "MTS_SetMapStartKey");
-        SetRefKey                   = (mts_void__char)              GetProcAddress(handle, "MTS_SetRefKey");
-        FilterNote                  = (mts_void__bool_char_char)    GetProcAddress(handle, "MTS_FilterNote");
-        ClearNoteFilter             = (mts_void__void)              GetProcAddress(handle, "MTS_ClearNoteFilter");
-        SetMultiChannel             = (mts_void__bool_char)         GetProcAddress(handle, "MTS_SetMultiChannel");
-        SetMultiChannelNoteTunings  = (mts_void__pConstDouble_char) GetProcAddress(handle, "MTS_SetMultiChannelNoteTunings");
-        SetMultiChannelNoteTuning   = (mts_void__double_char_char)  GetProcAddress(handle, "MTS_SetMultiChannelNoteTuning");
-        FilterNoteMultiChannel      = (mts_void__bool_char_char)    GetProcAddress(handle, "MTS_FilterNoteMultiChannel");
-        ClearNoteFilterMultiChannel = (mts_void__char)              GetProcAddress(handle, "MTS_ClearNoteFilterMultiChannel");
+        RegisterMaster              = (mts_void__pVoid)                 GetProcAddress(handle, "MTS_RegisterMaster");
+        DeregisterMaster            = (mts_void__void)                  GetProcAddress(handle, "MTS_DeregisterMaster");
+        Reinitialize                = (mts_void__void)                  GetProcAddress(handle, "MTS_Reinitialize");
+        HasMaster                   = (mts_bool__void)                  GetProcAddress(handle, "MTS_HasMaster");
+        HasIPC                      = (mts_bool__void)                  GetProcAddress(handle, "MTS_HasIPC");
+        GetVersionNumber            = (mts_int__void)                   GetProcAddress(handle, "MTS_GetVersionNumber");
+        GetNumClients               = (mts_int__void)                   GetProcAddress(handle, "MTS_GetNumClients");
+        SetNoteTunings              = (mts_void__pConstDouble)          GetProcAddress(handle, "MTS_SetNoteTunings");
+        SetNoteTuning               = (mts_void__double_char)           GetProcAddress(handle, "MTS_SetNoteTuning");
+        SetScaleName                = (mts_void__pConstChar)            GetProcAddress(handle, "MTS_SetScaleName");
+        SetPeriodRatio              = (mts_void__double)                GetProcAddress(handle, "MTS_SetPeriodRatio");
+        SetMapSize                  = (mts_void__schar)                 GetProcAddress(handle, "MTS_SetMapSize");
+        SetMapStartKey              = (mts_void__schar)                 GetProcAddress(handle, "MTS_SetMapStartKey");
+        SetRefKey                   = (mts_void__schar)                 GetProcAddress(handle, "MTS_SetRefKey");
+        FilterNote                  = (mts_void__bool_char_schar)       GetProcAddress(handle, "MTS_FilterNote");
+        ClearNoteFilter             = (mts_void__void)                  GetProcAddress(handle, "MTS_ClearNoteFilter");
+        SetMultiChannel             = (mts_void__bool_schar)            GetProcAddress(handle, "MTS_SetMultiChannel");
+        SetMultiChannelNoteTunings  = (mts_void__pConstDouble_schar)    GetProcAddress(handle, "MTS_SetMultiChannelNoteTunings");
+        SetMultiChannelNoteTuning   = (mts_void__double_char_schar)     GetProcAddress(handle, "MTS_SetMultiChannelNoteTuning");
+        FilterNoteMultiChannel      = (mts_void__bool_char_schar)       GetProcAddress(handle, "MTS_FilterNoteMultiChannel");
+        ClearNoteFilterMultiChannel = (mts_void__schar)                 GetProcAddress(handle, "MTS_ClearNoteFilterMultiChannel");
     }
     
     ~mtsmasterglobal()
@@ -169,27 +169,27 @@ struct mtsmasterglobal
             return;
         }
         
-        RegisterMaster              = (mts_void__pVoid)             dlsym(handle, "MTS_RegisterMaster");
-        DeregisterMaster            = (mts_void__void)              dlsym(handle, "MTS_DeregisterMaster");
-        Reinitialize                = (mts_void__void)              dlsym(handle, "MTS_Reinitialize");
-        HasMaster                   = (mts_bool__void)              dlsym(handle, "MTS_HasMaster");
-        HasIPC                      = (mts_bool__void)              dlsym(handle, "MTS_HasIPC");
-        GetVersionNumber            = (mts_int__void)               dlsym(handle, "MTS_GetVersionNumber");
-        GetNumClients               = (mts_int__void)               dlsym(handle, "MTS_GetNumClients");
-        SetNoteTunings              = (mts_void__pConstDouble)      dlsym(handle, "MTS_SetNoteTunings");
-        SetNoteTuning               = (mts_void__double_char)       dlsym(handle, "MTS_SetNoteTuning");
-        SetScaleName                = (mts_void__pConstChar)        dlsym(handle, "MTS_SetScaleName");
-        SetPeriodRatio              = (mts_void__double)            dlsym(handle, "MTS_SetPeriodRatio");
-        SetMapSize                  = (mts_void__char)              dlsym(handle, "MTS_SetMapSize");
-        SetMapStartKey              = (mts_void__char)              dlsym(handle, "MTS_SetMapStartKey");
-        SetRefKey                   = (mts_void__char)              dlsym(handle, "MTS_SetRefKey");
-        FilterNote                  = (mts_void__bool_char_char)    dlsym(handle, "MTS_FilterNote");
-        ClearNoteFilter             = (mts_void__void)              dlsym(handle, "MTS_ClearNoteFilter");
-        SetMultiChannel             = (mts_void__bool_char)         dlsym(handle, "MTS_SetMultiChannel");
-        SetMultiChannelNoteTunings  = (mts_void__pConstDouble_char) dlsym(handle, "MTS_SetMultiChannelNoteTunings");
-        SetMultiChannelNoteTuning   = (mts_void__double_char_char)  dlsym(handle, "MTS_SetMultiChannelNoteTuning");
-        FilterNoteMultiChannel      = (mts_void__bool_char_char)    dlsym(handle, "MTS_FilterNoteMultiChannel");
-        ClearNoteFilterMultiChannel = (mts_void__char)              dlsym(handle, "MTS_ClearNoteFilterMultiChannel");
+        RegisterMaster              = (mts_void__pVoid)                 dlsym(handle, "MTS_RegisterMaster");
+        DeregisterMaster            = (mts_void__void)                  dlsym(handle, "MTS_DeregisterMaster");
+        Reinitialize                = (mts_void__void)                  dlsym(handle, "MTS_Reinitialize");
+        HasMaster                   = (mts_bool__void)                  dlsym(handle, "MTS_HasMaster");
+        HasIPC                      = (mts_bool__void)                  dlsym(handle, "MTS_HasIPC");
+        GetVersionNumber            = (mts_int__void)                   dlsym(handle, "MTS_GetVersionNumber");
+        GetNumClients               = (mts_int__void)                   dlsym(handle, "MTS_GetNumClients");
+        SetNoteTunings              = (mts_void__pConstDouble)          dlsym(handle, "MTS_SetNoteTunings");
+        SetNoteTuning               = (mts_void__double_char)           dlsym(handle, "MTS_SetNoteTuning");
+        SetScaleName                = (mts_void__pConstChar)            dlsym(handle, "MTS_SetScaleName");
+        SetPeriodRatio              = (mts_void__double)                dlsym(handle, "MTS_SetPeriodRatio");
+        SetMapSize                  = (mts_void__schar)                 dlsym(handle, "MTS_SetMapSize");
+        SetMapStartKey              = (mts_void__schar)                 dlsym(handle, "MTS_SetMapStartKey");
+        SetRefKey                   = (mts_void__schar)                 dlsym(handle, "MTS_SetRefKey");
+        FilterNote                  = (mts_void__bool_char_schar)       dlsym(handle, "MTS_FilterNote");
+        ClearNoteFilter             = (mts_void__void)                  dlsym(handle, "MTS_ClearNoteFilter");
+        SetMultiChannel             = (mts_void__bool_schar)            dlsym(handle, "MTS_SetMultiChannel");
+        SetMultiChannelNoteTunings  = (mts_void__pConstDouble_schar)    dlsym(handle, "MTS_SetMultiChannelNoteTunings");
+        SetMultiChannelNoteTuning   = (mts_void__double_char_schar)     dlsym(handle, "MTS_SetMultiChannelNoteTuning");
+        FilterNoteMultiChannel      = (mts_void__bool_char_schar)       dlsym(handle, "MTS_FilterNoteMultiChannel");
+        ClearNoteFilterMultiChannel = (mts_void__schar)                 dlsym(handle, "MTS_ClearNoteFilterMultiChannel");
     }
     
     ~mtsmasterglobal()
@@ -204,24 +204,24 @@ struct mtsmasterglobal
 
 static mtsmasterglobal global;
 
-void MTS_RegisterMaster()                                                           {if (global.RegisterMaster) global.RegisterMaster(0);}
-void MTS_DeregisterMaster()                                                         {if (global.DeregisterMaster) global.DeregisterMaster();}
-bool MTS_CanRegisterMaster()                                                        {return global.HasMaster ? !global.HasMaster() : true;}
-bool MTS_HasIPC()                                                                   {return global.HasIPC ? global.HasIPC() : false;}
-void MTS_Reinitialize()                                                             {if (global.Reinitialize) global.Reinitialize();}
-bool MTS_Master_ShouldUpdateLibrary()                                               {return global.GetVersionNumber ? (global.GetVersionNumber() < libMTSVersion) : false;}
-int  MTS_GetNumClients()                                                            {return global.GetNumClients ? global.GetNumClients() : 0;}
-void MTS_SetNoteTunings(const double *freqs)                                        {if (global.SetNoteTunings) global.SetNoteTunings(freqs);}
-void MTS_SetNoteTuning(double freq, char midinote)                                  {if (global.SetNoteTuning) global.SetNoteTuning(freq, midinote);}
-void MTS_SetScaleName(const char *name)                                             {if (global.SetScaleName) global.SetScaleName(name);}
-void MTS_SetPeriodRatio(double periodRatio)                                         {if (global.SetPeriodRatio) global.SetPeriodRatio(periodRatio);}
-void MTS_SetMapSize(char size)                                                      {if (global.SetMapSize) global.SetMapSize(size);}
-void MTS_SetMapStartKey(char key)                                                   {if (global.SetMapStartKey) global.SetMapStartKey(key);}
-void MTS_SetRefKey(char key)                                                        {if (global.SetRefKey) global.SetRefKey(key);}
-void MTS_FilterNote(bool doFilter, char midinote, char midichannel)                 {if (global.FilterNote) global.FilterNote(doFilter, midinote, midichannel);}
-void MTS_ClearNoteFilter()                                                          {if (global.ClearNoteFilter) global.ClearNoteFilter();}
-void MTS_SetMultiChannel(bool set, char midichannel)                                {if (global.SetMultiChannel) global.SetMultiChannel(set, midichannel);}
-void MTS_SetMultiChannelNoteTunings(const double *freqs, char midichannel)          {if (global.SetMultiChannelNoteTunings) global.SetMultiChannelNoteTunings(freqs, midichannel);}
-void MTS_SetMultiChannelNoteTuning(double freq, char midinote, char midichannel)    {if (global.SetMultiChannelNoteTuning) global.SetMultiChannelNoteTuning(freq, midinote, midichannel);}
-void MTS_FilterNoteMultiChannel(bool doFilter, char midinote, char midichannel)     {if (global.FilterNoteMultiChannel) global.FilterNoteMultiChannel(doFilter, midinote, midichannel);}
-void MTS_ClearNoteFilterMultiChannel(char midichannel)                              {if (global.ClearNoteFilterMultiChannel) global.ClearNoteFilterMultiChannel(midichannel);}
+void MTS_RegisterMaster()                                                               {if (global.RegisterMaster) global.RegisterMaster(0);}
+void MTS_DeregisterMaster()                                                             {if (global.DeregisterMaster) global.DeregisterMaster();}
+bool MTS_CanRegisterMaster()                                                            {return global.HasMaster ? !global.HasMaster() : true;}
+bool MTS_HasIPC()                                                                       {return global.HasIPC ? global.HasIPC() : false;}
+void MTS_Reinitialize()                                                                 {if (global.Reinitialize) global.Reinitialize();}
+bool MTS_Master_ShouldUpdateLibrary()                                                   {return global.GetVersionNumber ? (global.GetVersionNumber() < libMTSVersion) : false;}
+int  MTS_GetNumClients()                                                                {return global.GetNumClients ? global.GetNumClients() : 0;}
+void MTS_SetNoteTunings(const double *freqs)                                            {if (global.SetNoteTunings) global.SetNoteTunings(freqs);}
+void MTS_SetNoteTuning(double freq, char midinote)                                      {if (global.SetNoteTuning) global.SetNoteTuning(freq, midinote);}
+void MTS_SetScaleName(const char *name)                                                 {if (global.SetScaleName) global.SetScaleName(name);}
+void MTS_SetPeriodRatio(double periodRatio)                                             {if (global.SetPeriodRatio) global.SetPeriodRatio(periodRatio);}
+void MTS_SetMapSize(signed char size)                                                   {if (global.SetMapSize) global.SetMapSize(size);}
+void MTS_SetMapStartKey(signed char key)                                                {if (global.SetMapStartKey) global.SetMapStartKey(key);}
+void MTS_SetRefKey(signed char key)                                                     {if (global.SetRefKey) global.SetRefKey(key);}
+void MTS_FilterNote(bool doFilter, char midinote, signed char midichannel)              {if (global.FilterNote) global.FilterNote(doFilter, midinote, midichannel);}
+void MTS_ClearNoteFilter()                                                              {if (global.ClearNoteFilter) global.ClearNoteFilter();}
+void MTS_SetMultiChannel(bool set, signed char midichannel)                             {if (global.SetMultiChannel) global.SetMultiChannel(set, midichannel);}
+void MTS_SetMultiChannelNoteTunings(const double *freqs, signed char midichannel)       {if (global.SetMultiChannelNoteTunings) global.SetMultiChannelNoteTunings(freqs, midichannel);}
+void MTS_SetMultiChannelNoteTuning(double freq, char midinote, signed char midichannel) {if (global.SetMultiChannelNoteTuning) global.SetMultiChannelNoteTuning(freq, midinote, midichannel);}
+void MTS_FilterNoteMultiChannel(bool doFilter, char midinote, signed char midichannel)  {if (global.FilterNoteMultiChannel) global.FilterNoteMultiChannel(doFilter, midinote, midichannel);}
+void MTS_ClearNoteFilterMultiChannel(signed char midichannel)                           {if (global.ClearNoteFilterMultiChannel) global.ClearNoteFilterMultiChannel(midichannel);}
