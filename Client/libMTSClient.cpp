@@ -587,7 +587,7 @@ struct MTSClient
         }
         
         *midichannel = static_cast<signed char>(0);
-        return freqToNote(freq, static_cast<char>(0));
+        return freqToNote(freq, static_cast<signed char>(0));
     }
     
     inline void parseMIDIData(const unsigned char *buffer, int len)
