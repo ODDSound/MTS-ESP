@@ -13,12 +13,12 @@ Any plugin that receives and processes MIDI note data can be made compatible wit
 
 A client can query the re-tuning for a given MIDI note number either as an absolute frequency value or as the difference from the standard 12-TET tuning (i.e. 440*2^((midi_note-69) / 12)).  **NOTE:** Ideally it should do this as often as possible whilst a note is playing or sound is being processed, not just when a note-on is received, so that note frequencies can update in real-time (along the flight of a note) if the tuning is changed or automated in the master plugin.
 
-When not connected to a master plugin, a client will automatically revert to a local tuning table, set to 12-TET by default.  As a bonus, this local tuning table can be updated with MIDI Tuning Standard (MTS) SysEx messages.  The client API includes a function that parses incoming MIDI SysEx data and identifies all message formats defined in the MTS standard.  Therefore even without using the MTS-ESP system, the client API can still add microtuning support to a plugin.
+When not connected to a master plugin, a client will automatically revert to a local tuning table, set to 12-TET by default.  As a bonus, this local tuning table can be updated with [MIDI Tuning Standard](https://midi.org/midi-tuning-updated-specification) (MTS) SysEx messages.  The client API includes a function that parses incoming MIDI data and identifies all message formats defined in the MTS standard.  Therefore even without using the MTS-ESP system, the client API can still add microtuning support to a plugin.
 
 Some other useful optional implementation suggestions include:
 
 * When a note-on message is received, a client should check to see if the note should be filtered out and ignored.  This allows a master plugin to define a keyboard map that includes unmapped keys.
-* Allow users the choice of querying retuning only at note-on, or continuously whilst notes are playing.
+* Allow users the choice of applying retuning only at note-on, or continuously whilst notes are playing.
 * Display the MTS-ESP connection status on your UI.
 
 ## Max Package
@@ -39,7 +39,7 @@ A master can optionally specify notes that clients should filter out, allowing e
 
 The MTS-ESP library includes support for multi-channel tuning tables, usually used with MIDI controllers designed for microtonal music and having more than 128 keys.
 
-It is optional for a client to provide a MIDI channel when querying tuning or whether a note should be filtered, as with some plugins the channel data may not be available.  For a client plugin to support multi-channel tuning tables it must supply a MIDI channel wherever possible.  The MTS-ESP library automatically detects if this is the case and will flag a client as able to support multi-channel tuning tables.  Since this is not guaranteed, any master plugin that implements multi-channel tuning tables should also provide a regular single-channel tuning table as a fallback.
+It is optional for a client to provide a MIDI channel when querying tuning or note filtering, as some plugins may be channel agnostic or use MIDI channels for other purposes (e.g. MPE).  For a client plugin to support multi-channel tuning tables it must supply a MIDI channel wherever possible.  The MTS-ESP library automatically detects if this is the case and will flag a client as able to support multi-channel tuning tables.  Since this is not guaranteed, any master plugin that implements multi-channel tuning tables should also provide a default single-channel tuning table as a fallback.
 
 
 ## libMTS
@@ -51,7 +51,7 @@ This is the dynamic library through which a master connects to clients.  If you 
 **Mac OSX:** /Library/Application Support/MTS-ESP  
 **Linux:** /usr/local/lib  
   
-Windows and OSX Installers are provided which you can bundle into your own installer or, if you prefer, just include the library files and install to the above locations.  The Mac installers are notarised and compatible with OSX 10.15+.
+Windows and OSX Installers are provided which you can bundle into your own installer or, if you prefer, just include the library files and install to the above locations.  The Mac installers are notarised and compatible with OSX 10.15+.  Standalone master or client apps on macOS must use the [Disable Library Validation Entitlement](https://developer.apple.com/documentation/BundleResources/Entitlements/com.apple.security.cs.disable-library-validation) to allow the library to load.
 
 
 ## IPC Support
